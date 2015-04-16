@@ -92,6 +92,33 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testBeforeSaveMultiField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['title', 'sub_title']]);
+
+        $data = ['title' => 'foo', 'sub_title' => 'bar'];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->slug;
+        $expected = 'foo-bar';
+        $this->assertEquals($expected, $result);
+
+        $data = ['title' => 'foo', 'sub_title' => 'bar'];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->slug;
+        $expected = 'foo-bar-1';
+        $this->assertEquals($expected, $result);
+
+        $data = ['title' => 'foo', 'sub_title' => 'bar-1'];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->slug;
+        $expected = 'foo-bar-1-1';
+        $this->assertEquals($expected, $result);
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
