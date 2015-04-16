@@ -16,6 +16,7 @@ use UnexpectedValueException;
  */
 class SlugBehavior extends Behavior
 {
+
     /**
      * Configuration.
      *
@@ -66,6 +67,9 @@ class SlugBehavior extends Behavior
 
     /**
      * Constructor.
+     *
+     * @param \Cake\ORM\Table $table The table this behavior is attached to.
+     * @param array $config The config for this behavior.
      */
     public function __construct(Table $table, array $config = [])
     {
@@ -77,7 +81,10 @@ class SlugBehavior extends Behavior
     }
 
     /**
-     * {@inheritdoc}
+     * Initialize behavior
+     *
+     * @param array $config The configuration settings provided to this behavior.
+     * @return void
      */
     public function initialize(array $config)
     {
@@ -108,7 +115,9 @@ class SlugBehavior extends Behavior
     }
 
     /**
-     * {@inheritdoc}
+     * Returns list of event this behavior is interested in.
+     *
+     * @return array
      */
     public function implementedEvents()
     {
@@ -116,7 +125,12 @@ class SlugBehavior extends Behavior
     }
 
     /**
-     * {@inheritdoc}
+     * Callback for Model.buildValidator event.
+     *
+     * @param \Cake\Event\Event $event The beforeSave event that was fired.
+     * @param \Cake\Validation\Validator $validator Validator instance.
+     * @param string $name Validator name.
+     * @return void
      */
     public function buildValidator(Event $event, Validator $validator, $name)
     {
@@ -127,7 +141,12 @@ class SlugBehavior extends Behavior
     }
 
     /**
-     * {@inheritdoc}
+     * Callback for Model.beforeSave event.
+     *
+     * @param \Cake\Event\Event $event The afterSave event that was fired.
+     * @param \Cake\ORM\Entity $entity The entity that was saved.
+     * @param \ArrayObject $options Options.
+     * @return void
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
@@ -182,7 +201,7 @@ class SlugBehavior extends Behavior
             }
             $string = $entity;
             unset($entity);
-        } else if (($entity instanceof Entity) && $string === null) {
+        } elseif (($entity instanceof Entity) && $string === null) {
             $string = '';
             foreach ((array)$this->config('displayField') as $field) {
                 if ($entity->errors($field)) {

@@ -9,8 +9,13 @@ use Muffin\Slug\SluggerInterface;
  */
 class CakeSlugger implements SluggerInterface
 {
+
     /**
-     * {@inheritdoc}
+     * Generate slug.
+     *
+     * @param string $string Input string.
+     * @param string $replacement Replacement string.
+     * @return string Sluggified string.
      */
     public static function slug($string, $replacement = '-')
     {
