@@ -149,4 +149,18 @@ class SlugBehaviorTest extends TestCase
         $tag = $this->Tags->newEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
+
+    public function testFinder()
+    {
+        $result = $this->Tags->find('slugged', ['slug' => 'dark-color'])
+            ->select(['slug', 'name'])
+            ->first()
+            ->toArray();
+
+        $expected = [
+            'slug' => 'dark-color',
+            'name' => 'Dark Color',
+        ];
+        $this->assertEquals($expected, $result);
+    }
 }
