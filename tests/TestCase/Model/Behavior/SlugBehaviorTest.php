@@ -91,6 +91,10 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Behavior->slug('foo/bar');
         $expected = 'foo-bar';
         $this->assertEquals($expected, $result);
+
+        $result = $this->Behavior->slug('foo/bar', '_');
+        $expected = 'foo_bar';
+        $this->assertEquals($expected, $result);
     }
 
     public function testBeforeSaveMultiField()
@@ -150,6 +154,33 @@ class SlugBehaviorTest extends TestCase
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
 
+    public function testSlugUnchanged()
+    {
+        $data = ['name' => 'foo', 'slug' => 'my-slug'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'my-slug';
+        $this->assertEquals($expected, $result);
+
+        $tag = $this->Tags->find('slugged', ['slug' => 'dark-color'])->first();
+        $tag = $this->Tags->patchEntity($tag, ['name' => 'new name']);
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'dark-color';
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testSavingEntityWithErrors()
+    {
+        $data = ['name' => 'foo'];
+        $tag = $this->Tags->newEntity($data);
+        $tag->errors('name', ['error']);
+
+        $result = $this->Tags->save($tag);
+        $this->assertFalse($result);
+        $this->assertNull($tag->get('slug'));
+    }
+
     public function testFinder()
     {
         $result = $this->Tags->find('slugged', ['slug' => 'dark-color'])
@@ -162,5 +193,14 @@ class SlugBehaviorTest extends TestCase
             'name' => 'Dark Color',
         ];
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The `slug` key is required by the `slugged` finder
+     */
+    public function testFinderException()
+    {
+        $result = $this->Tags->find('slugged')->first();
     }
 }
