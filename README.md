@@ -1,7 +1,7 @@
 # Slug
 
-[![Build Status](https://img.shields.io/travis/UseMuffin/Slug/master.svg?style=flat-square)](https://travis-ci.org/ADmad/cakephp-jwt-auth)
-[![Total Downloads](https://img.shields.io/packagist/dt/muffin/slug.svg?style=flat-square)](https://packagist.org/packages/ADmad/cakephp-jwt-auth)
+[![Build Status](https://img.shields.io/travis/UseMuffin/Slug/master.svg?style=flat-square)](https://travis-ci.org/UseMuffin/Slug)
+[![Total Downloads](https://img.shields.io/packagist/dt/muffin/slug.svg?style=flat-square)](https://packagist.org/packages/muffin/slug)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
 Slugging for CakePHP 3.x
