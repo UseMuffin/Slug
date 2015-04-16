@@ -119,6 +119,22 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testCustomSlugField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles->addBehavior('Muffin/Slug.Slug', [
+            'displayField' => 'title',
+            'field' => 'sub_title'
+        ]);
+
+        $data = ['title' => 'foo', 'slug' => ''];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->sub_title;
+        $expected = 'foo';
+        $this->assertEquals($expected, $result);
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */

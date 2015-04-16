@@ -149,11 +149,11 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        $field = $this->config('field');
+        $slugField = $this->config('field');
         $fields = (array)$this->config('displayField');
         $separator = $this->config('separator');
 
-        if (!$entity->isNew() || $entity->dirty($field)) {
+        if (!$entity->isNew() || $entity->dirty($slugField)) {
             return;
         }
 
@@ -165,7 +165,7 @@ class SlugBehavior extends Behavior
             $parts[] = $entity->{$field};
         }
 
-        $entity->set('slug', $this->slug($entity, implode($separator, $parts), $separator));
+        $entity->set($slugField, $this->slug($entity, implode($separator, $parts), $separator));
     }
 
     /**
