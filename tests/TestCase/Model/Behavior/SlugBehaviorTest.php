@@ -9,7 +9,8 @@ use Muffin\Slug\Model\Behavior\SlugBehavior;
 class SlugBehaviorTest extends TestCase
 {
     public $fixtures = [
-        'Muffin/Slug.Tags' => 'plugin.muffin/slug.tags',
+        'plugin.Muffin/Slug.Tags',
+        'plugin.Muffin/Slug.Articles',
     ];
 
     public function setUp()
