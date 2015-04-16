@@ -94,7 +94,6 @@ class SlugBehavior extends Behavior
             if (!class_exists($slugger)) {
                 throw new UnexpectedValueException('Missing the `' . $slugger . '` slugger class.');
             }
-            $slugger = new $slugger;
         }
 
         if (!class_implements($slugger, 'Muffin\Slug\SluggerInterface')) {
