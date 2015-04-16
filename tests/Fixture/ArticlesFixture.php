@@ -28,9 +28,9 @@ class ArticlesFixture extends TestFixture
      * @var array
      */
     public $records = [
-        ['id' => 1, 'title' => 'First Article', 'sub_title' => 'subtitle 1', 'slug' => 'first-title'],
-        ['id' => 2, 'title' => 'Second Article', 'sub_title' => 'subtitle 2', 'slug' => 'second-title'],
-        ['id' => 3, 'title' => 'Third Article', 'sub_title' => 'subtitle 3', 'slug' => 'third-title'],
+        ['title' => 'First Article', 'sub_title' => 'subtitle 1', 'slug' => 'first-title'],
+        ['title' => 'Second Article', 'sub_title' => 'subtitle 2', 'slug' => 'second-title'],
+        ['title' => 'Third Article', 'sub_title' => 'subtitle 3', 'slug' => 'third-title'],
     ];
 
     public function init()

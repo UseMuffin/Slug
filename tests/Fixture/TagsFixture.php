@@ -22,14 +22,12 @@ class TagsFixture extends TestFixture
 
     public $records = [
         [
-            'id' => 1,
             'namespace' => null,
             'slug' => 'color',
             'name' => 'Color',
             'counter' => 2,
         ],
         [
-            'id' => 2,
             'namespace' => null,
             'slug' => 'dark-color',
             'name' => 'Dark Color',
