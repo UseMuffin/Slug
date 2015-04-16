@@ -1,6 +1,7 @@
 <?php
 namespace Muffin\Slug\Test\TestCase\Model\Behavior;
 
+use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -116,6 +117,11 @@ class SlugBehaviorTest extends TestCase
 
         $result = $Articles->save($tag)->slug;
         $expected = 'foo-bar-1-1';
+        $this->assertEquals($expected, $result);
+
+        $entity = new Entity(['title' => 'ad', 'sub_title' => 'mad']);
+        $result = $Articles->slug($entity);
+        $expected = 'ad-mad';
         $this->assertEquals($expected, $result);
     }
 

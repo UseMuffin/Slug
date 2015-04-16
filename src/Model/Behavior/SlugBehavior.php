@@ -61,7 +61,7 @@ class SlugBehavior extends Behavior
             'slugged' => 'findSlugged',
         ],
         'implementedMethods' => [
-            'slug' => 'generateSlug',
+            'slug' => 'slug',
         ],
     ];
 
@@ -201,13 +201,14 @@ class SlugBehavior extends Behavior
             $string = $entity;
             unset($entity);
         } elseif (($entity instanceof Entity) && $string === null) {
-            $string = '';
+            $string = [];
             foreach ((array)$this->config('displayField') as $field) {
                 if ($entity->errors($field)) {
                     throw new InvalidArgumentException();
                 }
-                $string .= $entity->get($field);
+                $string[] = $entity->get($field);
             }
+            $string = implode($separator, $string);
         }
 
         $slug = $this->_slug($string, $separator);
