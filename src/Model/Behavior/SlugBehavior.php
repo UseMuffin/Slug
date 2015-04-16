@@ -213,7 +213,7 @@ class SlugBehavior extends Behavior
         $slug = $this->_slug($string, $separator);
 
         if (isset($entity) && $unique = $this->config('unique')) {
-            $slug = call_user_func_array($unique, [$entity, $slug, $separator]);
+            $slug = $unique($entity, $slug, $separator);
         }
 
         return $slug;
@@ -265,7 +265,6 @@ class SlugBehavior extends Behavior
     {
         $replacements = $this->config('replacements');
         $func = [$this->config('slugger'), 'slug'];
-        $args = [str_replace(array_keys($replacements), $replacements, $string), $separator];
-        return call_user_func_array($func, $args);
+        return $func(str_replace(array_keys($replacements), $replacements, $string), $separator);
     }
 }
