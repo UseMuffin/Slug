@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     bootstrap="./tests/bootstrap.php"
+    colors="true"
+    stopOnFailure="false"
     >
 
     <testsuites>
@@ -20,4 +22,14 @@
         </listener>
     </listeners>
 
+    <!-- Prevent coverage reports from looking in tests and vendors -->
+    <filter>
+        <blacklist>
+            <directory suffix=".php">./vendor/</directory>
+            <directory suffix=".ctp">./vendor/</directory>
+
+            <directory suffix=".php">./tests/</directory>
+            <directory suffix=".ctp">./tests/</directory>
+        </blacklist>
+    </filter>
 </phpunit>

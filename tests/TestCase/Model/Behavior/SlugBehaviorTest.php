@@ -1,6 +1,7 @@
 <?php
 namespace Muffin\Slug\Test\TestCase\Model\Behavior;
 
+use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -9,7 +10,8 @@ use Muffin\Slug\Model\Behavior\SlugBehavior;
 class SlugBehaviorTest extends TestCase
 {
     public $fixtures = [
-        'Muffin/Slug.Tags' => 'plugin.muffin/slug.tags',
+        'plugin.Muffin/Slug.Tags',
+        'plugin.Muffin/Slug.Articles',
     ];
 
     public function setUp()
@@ -89,6 +91,58 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Behavior->slug('foo/bar');
         $expected = 'foo-bar';
         $this->assertEquals($expected, $result);
+
+        $result = $this->Behavior->slug('foo/bar', '_');
+        $expected = 'foo_bar';
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testBeforeSaveMultiField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['title', 'sub_title']]);
+
+        $data = ['title' => 'foo', 'sub_title' => 'bar'];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->slug;
+        $expected = 'foo-bar';
+        $this->assertEquals($expected, $result);
+
+        $data = ['title' => 'foo', 'sub_title' => 'bar'];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->slug;
+        $expected = 'foo-bar-1';
+        $this->assertEquals($expected, $result);
+
+        $data = ['title' => 'foo', 'sub_title' => 'bar-1'];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->slug;
+        $expected = 'foo-bar-1-1';
+        $this->assertEquals($expected, $result);
+
+        $entity = new Entity(['title' => 'ad', 'sub_title' => 'mad']);
+        $result = $Articles->slug($entity);
+        $expected = 'ad-mad';
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testCustomSlugField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles->addBehavior('Muffin/Slug.Slug', [
+            'displayField' => 'title',
+            'field' => 'sub_title'
+        ]);
+
+        $data = ['title' => 'foo', 'slug' => ''];
+        $tag = $Articles->newEntity($data);
+
+        $result = $Articles->save($tag)->sub_title;
+        $expected = 'foo';
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -98,5 +152,55 @@ class SlugBehaviorTest extends TestCase
     {
         $tag = $this->Tags->newEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
+    }
+
+    public function testSlugUnchanged()
+    {
+        $data = ['name' => 'foo', 'slug' => 'my-slug'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'my-slug';
+        $this->assertEquals($expected, $result);
+
+        $tag = $this->Tags->find('slugged', ['slug' => 'dark-color'])->first();
+        $tag = $this->Tags->patchEntity($tag, ['name' => 'new name']);
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'dark-color';
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testSavingEntityWithErrors()
+    {
+        $data = ['name' => 'foo'];
+        $tag = $this->Tags->newEntity($data);
+        $tag->errors('name', ['error']);
+
+        $result = $this->Tags->save($tag);
+        $this->assertFalse($result);
+        $this->assertNull($tag->get('slug'));
+    }
+
+    public function testFinder()
+    {
+        $result = $this->Tags->find('slugged', ['slug' => 'dark-color'])
+            ->select(['slug', 'name'])
+            ->first()
+            ->toArray();
+
+        $expected = [
+            'slug' => 'dark-color',
+            'name' => 'Dark Color',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The `slug` key is required by the `slugged` finder
+     */
+    public function testFinderException()
+    {
+        $result = $this->Tags->find('slugged')->first();
     }
 }

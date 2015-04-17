@@ -5,6 +5,7 @@ use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
@@ -61,7 +62,7 @@ class SlugBehavior extends Behavior
             'slugged' => 'findSlugged',
         ],
         'implementedMethods' => [
-            'slug' => 'generateSlug',
+            'slug' => 'slug',
         ],
     ];
 
@@ -94,7 +95,6 @@ class SlugBehavior extends Behavior
             if (!class_exists($slugger)) {
                 throw new UnexpectedValueException('Missing the `' . $slugger . '` slugger class.');
             }
-            $slugger = new $slugger;
         }
 
         if (!class_implements($slugger, 'Muffin\Slug\SluggerInterface')) {
@@ -150,11 +150,11 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        $field = $this->config('field');
+        $slugField = $this->config('field');
         $fields = (array)$this->config('displayField');
         $separator = $this->config('separator');
 
-        if (!$entity->isNew() || $entity->dirty($field)) {
+        if (!$entity->isNew() || $entity->dirty($slugField)) {
             return;
         }
 
@@ -166,7 +166,7 @@ class SlugBehavior extends Behavior
             $parts[] = $entity->{$field};
         }
 
-        $entity->set('slug', $this->slug($entity, implode($separator, $parts), $separator));
+        $entity->set($slugField, $this->slug($entity, implode($separator, $parts), $separator));
     }
 
     /**
@@ -202,19 +202,20 @@ class SlugBehavior extends Behavior
             $string = $entity;
             unset($entity);
         } elseif (($entity instanceof Entity) && $string === null) {
-            $string = '';
+            $string = [];
             foreach ((array)$this->config('displayField') as $field) {
                 if ($entity->errors($field)) {
                     throw new InvalidArgumentException();
                 }
-                $string .= $entity->get($field);
+                $string[] = $entity->get($field);
             }
+            $string = implode($separator, $string);
         }
 
         $slug = $this->_slug($string, $separator);
 
         if (isset($entity) && $unique = $this->config('unique')) {
-            $slug = call_user_func_array($unique, [$entity, $slug, $separator]);
+            $slug = $unique($entity, $slug, $separator);
         }
 
         return $slug;
@@ -266,7 +267,6 @@ class SlugBehavior extends Behavior
     {
         $replacements = $this->config('replacements');
         $func = [$this->config('slugger'), 'slug'];
-        $args = [str_replace(array_keys($replacements), $replacements, $string), $separator];
-        return call_user_func_array($func, $args);
+        return $func(str_replace(array_keys($replacements), $replacements, $string), $separator);
     }
 }
