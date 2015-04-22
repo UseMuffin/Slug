@@ -22,8 +22,24 @@ You then need to load the plugin. In `boostrap.php`, something like:
 ```
 
 ## Usage
+Now you can add the behavior to your table classes in the `initialize()` method.
 
-{{@TODO documentation}}
+```php
+public function initialize(array $config)
+{
+  //etc
+  $this->addBehavior('Muffin/Slug.Slug', [
+    // Here you can define your options, the defaults can be found in the behaviours $_defaultConfig
+  ]);
+}
+```
+
+If you want to find a record using it's slug, a custom finder is provided by the plugin.
+
+```php
+// src/Controller/ExamplesController.php
+$example = $this->Examples->find('slugged', ['slug' => $slug]);
+```
 
 ## Patches & Features
 
