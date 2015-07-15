@@ -204,7 +204,7 @@ class SlugBehaviorTest extends TestCase
     {
         $result = $this->Tags->find('slugged')->first();
     }
-    
+
     public function testContainSluggedTables()
     {
         TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
