@@ -12,6 +12,7 @@ class SlugBehaviorTest extends TestCase
     public $fixtures = [
         'plugin.Muffin/Slug.Tags',
         'plugin.Muffin/Slug.Articles',
+        'plugin.Muffin/Slug.ArticlesTags'
     ];
 
     public function setUp()
@@ -202,5 +203,24 @@ class SlugBehaviorTest extends TestCase
     public function testFinderException()
     {
         $result = $this->Tags->find('slugged')->first();
+    }
+
+    public function testContainSluggedTables()
+    {
+        TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+
+        $this->Tags->belongsToMany('Muffin/Slug.Articles', [
+            'joinTable' => 'slug_articles_tags',
+            'through' => TableRegistry::get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags'])
+        ]);
+
+        $result = $this->Tags->find('slugged', ['slug' => 'color'])
+            ->contain(['Articles'])
+            ->first()
+            ->toArray();
+
+        $this->assertArrayHasKey('articles', $result);
+        $this->assertEquals(1, $result['id']);
+        $this->assertCount(1, $result['articles']);
     }
 }

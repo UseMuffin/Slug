@@ -182,7 +182,7 @@ class SlugBehavior extends Behavior
             throw new InvalidArgumentException('The `slug` key is required by the `slugged` finder.');
         }
 
-        return $query->where([$this->config('field') => $options['slug']]);
+        return $query->where([$this->_table->aliasField($this->config('field')) => $options['slug']]);
     }
 
     /**
