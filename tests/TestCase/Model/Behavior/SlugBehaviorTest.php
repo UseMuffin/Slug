@@ -215,4 +215,14 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals(1, $result['id']);
         $this->assertCount(1, $result['articles']);
     }
+
+    public function testSluggerConfig()
+    {
+        $this->Behavior->config('slugger', [
+            'className' => '\Muffin\Slug\Slugger\CakeSlugger',
+            'lowercase' => false
+        ]);
+
+        $this->assertFalse($this->Behavior->slugger()->config['lowercase']);
+    }
 }
