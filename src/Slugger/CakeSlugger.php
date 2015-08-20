@@ -11,13 +11,25 @@ class CakeSlugger implements SluggerInterface
 {
 
     /**
+     * Config options.
+     *
+     * - `lowercase` - Boolean indication whether slug should be lowercased.
+     *   Default to true.
+     *
+     * @var array
+     */
+    public $config = [
+        'lowercase' => true
+    ];
+
+    /**
      * Generate slug.
      *
      * @param string $string Input string.
      * @param string $replacement Replacement string.
      * @return string Sluggified string.
      */
-    public static function slug($string, $replacement = '-')
+    public function slug($string, $replacement = '-')
     {
         return Inflector::slug($string, $replacement);
     }

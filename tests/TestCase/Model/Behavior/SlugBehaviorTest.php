@@ -44,15 +44,6 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testInitializeThrowsUnexpectedValueException()
-    {
-        $table = $this->getMock('Cake\ORM\Table');
-        new SlugBehavior($table, ['slugger' => 'Foo\Bar']);
-    }
-
     public function testImplementedEvents()
     {
         $result = $this->Behavior->implementedEvents();
