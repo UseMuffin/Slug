@@ -210,6 +210,7 @@ class SlugBehaviorTest extends TestCase
         TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
 
         $this->Tags->belongsToMany('Muffin/Slug.Articles', [
+            'foreignKey' => 'slug_tag_id',
             'joinTable' => 'slug_articles_tags',
             'through' => TableRegistry::get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags'])
         ]);
