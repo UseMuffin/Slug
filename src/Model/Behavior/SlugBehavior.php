@@ -109,6 +109,13 @@ class SlugBehavior extends Behavior
         }
     }
 
+    /**
+     * Get/set slugger instance.
+     *
+     * @param \Muffin\Slug\SluggerInterface $slugger Sets slugger instance if passed.
+     *   If no argument is passed return slugger intance based on behavior config.
+     * @return \Muffin\Slug\SluggerInterface|void
+     */
     public function slugger($slugger = null)
     {
         if ($slugger !== null) {
