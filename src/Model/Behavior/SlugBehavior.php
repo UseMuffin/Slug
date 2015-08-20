@@ -112,9 +112,9 @@ class SlugBehavior extends Behavior
     /**
      * Get/set slugger instance.
      *
-     * @param \Muffin\Slug\SluggerInterface $slugger Sets slugger instance if passed.
+     * @param callable $slugger Sets slugger instance if passed.
      *   If no argument is passed return slugger intance based on behavior config.
-     * @return \Muffin\Slug\SluggerInterface|void
+     * @return callable|void
      */
     public function slugger($slugger = null)
     {
@@ -131,16 +131,12 @@ class SlugBehavior extends Behavior
 
         if (is_string($slugger)) {
             $this->_slugger = new $slugger();
-        } elseif (is_array($slugger)) {
+        } elseif (is_array($slugger) && isset($slugger['className'])) {
             $this->_slugger = new $slugger['className']();
             unset($slugger['className']);
             $this->_slugger->config = $slugger + $this->_slugger->config;
         } else {
             $this->_slugger = $slugger;
-        }
-
-        if (!class_implements($this->_slugger, 'Muffin\Slug\SluggerInterface')) {
-            throw new UnexpectedValueException('Slugger must implement `Muffin\Slug\SluggerInterface`.');
         }
 
         return $this->_slugger;
@@ -298,7 +294,10 @@ class SlugBehavior extends Behavior
     protected function _slug($string, $separator)
     {
         $replacements = $this->config('replacements');
-        $func = [$this->slugger(), 'slug'];
-        return $func(str_replace(array_keys($replacements), $replacements, $string), $separator);
+        $callable = $this->slugger();
+        if (is_object($callable) && $callable instanceof SluggerInterface) {
+            $callable = [$callable, 'slug'];
+        }
+        return $callable(str_replace(array_keys($replacements), $replacements, $string), $separator);
     }
 }
