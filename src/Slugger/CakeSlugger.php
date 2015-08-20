@@ -31,6 +31,12 @@ class CakeSlugger implements SluggerInterface
      */
     public function slug($string, $replacement = '-')
     {
-        return Inflector::slug($string, $replacement);
+        $string = Inflector::slug($string, $replacement);
+
+        if ($this->config['lowercase']) {
+            return strtolower($string);
+        }
+
+        return $string;
     }
 }
