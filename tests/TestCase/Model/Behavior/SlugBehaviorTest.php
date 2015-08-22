@@ -228,7 +228,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testCallableForSlugger()
     {
-        $this->Behavior->config('slugger', function($string, $separator) {
+        $this->Behavior->config('slugger', function ($string, $separator) {
             return strtolower($string);
         });
 
