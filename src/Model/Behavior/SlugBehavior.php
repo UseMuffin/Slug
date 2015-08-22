@@ -67,6 +67,13 @@ class SlugBehavior extends Behavior
     ];
 
     /**
+     * Slugger instance
+     *
+     * @var \Muffin\Slug\SluggerInterface
+     */
+    protected $_slugger;
+
+    /**
      * Constructor.
      *
      * @param \Cake\ORM\Table $table The table this behavior is attached to.
@@ -89,18 +96,6 @@ class SlugBehavior extends Behavior
      */
     public function initialize(array $config)
     {
-        $slugger = $this->config('slugger');
-
-        if (is_string($slugger)) {
-            if (!class_exists($slugger)) {
-                throw new UnexpectedValueException('Missing the `' . $slugger . '` slugger class.');
-            }
-        }
-
-        if (!class_implements($slugger, 'Muffin\Slug\SluggerInterface')) {
-            throw new UnexpectedValueException('Slugger must implement `Muffin\Slug\SluggerInterface`.');
-        }
-
         if (!$this->config('displayField')) {
             $this->config('displayField', $this->_table->displayField());
         }
@@ -112,6 +107,39 @@ class SlugBehavior extends Behavior
         if ($this->config('unique') === true) {
             $this->config('unique', [$this, '_uniqueSlug']);
         }
+    }
+
+    /**
+     * Get/set slugger instance.
+     *
+     * @param callable $slugger Sets slugger instance if passed.
+     *   If no argument is passed return slugger intance based on behavior config.
+     * @return callable|void
+     */
+    public function slugger($slugger = null)
+    {
+        if ($slugger !== null) {
+            $this->_slugger = $slugger;
+            return;
+        }
+
+        if ($this->_slugger !== null) {
+            return $this->_slugger;
+        }
+
+        $slugger = $this->config('slugger');
+
+        if (is_string($slugger)) {
+            $this->_slugger = new $slugger();
+        } elseif (is_array($slugger) && isset($slugger['className'])) {
+            $this->_slugger = new $slugger['className']();
+            unset($slugger['className']);
+            $this->_slugger->config = $slugger + $this->_slugger->config;
+        } else {
+            $this->_slugger = $slugger;
+        }
+
+        return $this->_slugger;
     }
 
     /**
@@ -266,7 +294,10 @@ class SlugBehavior extends Behavior
     protected function _slug($string, $separator)
     {
         $replacements = $this->config('replacements');
-        $func = [$this->config('slugger'), 'slug'];
-        return $func(str_replace(array_keys($replacements), $replacements, $string), $separator);
+        $callable = $this->slugger();
+        if (is_object($callable) && $callable instanceof SluggerInterface) {
+            $callable = [$callable, 'slug'];
+        }
+        return $callable(str_replace(array_keys($replacements), $replacements, $string), $separator);
     }
 }

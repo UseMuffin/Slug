@@ -44,15 +44,6 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testInitializeThrowsUnexpectedValueException()
-    {
-        $table = $this->getMock('Cake\ORM\Table');
-        new SlugBehavior($table, ['slugger' => 'Foo\Bar']);
-    }
-
     public function testImplementedEvents()
     {
         $result = $this->Behavior->implementedEvents();
@@ -223,5 +214,25 @@ class SlugBehaviorTest extends TestCase
         $this->assertArrayHasKey('articles', $result);
         $this->assertEquals(1, $result['id']);
         $this->assertCount(1, $result['articles']);
+    }
+
+    public function testSluggerConfig()
+    {
+        $this->Behavior->config('slugger', [
+            'className' => '\Muffin\Slug\Slugger\CakeSlugger',
+            'lowercase' => false
+        ]);
+
+        $this->assertFalse($this->Behavior->slugger()->config['lowercase']);
+    }
+
+    public function testCallableForSlugger()
+    {
+        $this->Behavior->config('slugger', function ($string, $separator) {
+            return strtolower($string);
+        });
+
+        $result = $this->Behavior->slug('FOO');
+        $this->assertEquals('foo', $result);
     }
 }

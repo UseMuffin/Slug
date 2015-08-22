@@ -9,12 +9,20 @@ use Muffin\Slug\SluggerInterface;
  */
 class CocurSlugger implements SluggerInterface
 {
+
     /**
-     * Regex.
+     * Config options.
      *
-     * @var string
+     * - `regex` - Regular expression passed to Concur slugger's constructor.
+     * - `lowercase` - Boolean indication whether slug should be lowercased.
+     *   Default to true.
+     *
+     * @var array
      */
-    public static $regex = '/([^a-z0-9]|-)+/';
+    public $config = [
+        'regex' => null,
+        'lowercase' => true
+    ];
 
     /**
      * Generate slug.
@@ -23,8 +31,11 @@ class CocurSlugger implements SluggerInterface
      * @param string $replacement Replacement string.
      * @return string Sluggified string.
      */
-    public static function slug($string, $replacement = '-')
+    public function slug($string, $replacement = '-')
     {
-        return (new Slugify(static::$regex))->slugify($string, $replacement);
+        $options = $this->config;
+        $regex = $options['regex'];
+        unset($options['regex']);
+        return Slugify::create($regex, $options)->slugify($string, $replacement);
     }
 }
