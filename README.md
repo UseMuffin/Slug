@@ -7,39 +7,76 @@
 
 Slugging for CakePHP 3.x
 
-## Install
+## Requirements
+
+- CakePHP 3.0+
+
+## Installation
 
 Using [Composer][composer]:
 
-```
+```bash
 composer require muffin/slug:dev-master
 ```
 
-You then need to load the plugin. In `boostrap.php`, something like:
+To make your application load the plugin either run:
+
+```bash
+./bin/cake plugin load Muffin/Slug
+```
+
+or add the following line to `config/bootstrap.php`:
 
 ```php
-\Cake\Core\Plugin::load('Muffin/Slug');
+Plugin::load('Muffin/Slug');
 ```
 
 ## Usage
-Now you can add the behavior to your table classes in the `initialize()` method.
+To enable slugging add the behavior to your table classes in the
+`initialize()` method.
 
 ```php
 public function initialize(array $config)
 {
   //etc
   $this->addBehavior('Muffin/Slug.Slug', [
-    // Here you can define your options, the defaults can be found in the behaviours $_defaultConfig
+    // Optionally define your custom options here (see Configuration)
   ]);
 }
 ```
 
+> Please note that Slug expects a database column named `slug` to function.
+> If you prefer to use another column make sure to specify the `field`
+> configuration option.
+
+### Searching
 If you want to find a record using it's slug, a custom finder is provided by the plugin.
 
 ```php
 // src/Controller/ExamplesController.php
 $example = $this->Examples->find('slugged', ['slug' => $slug]);
 ```
+
+## Configuration
+
+Slug comes with the following configuration options:
+
+- `field`: name of the field (column) to hold the slug. Defaults to `slug`.
+- `displayField`: name of the field(s) to build the slug from. Defaults to
+     the `\Cake\ORM\Table::displayField()`.
+- `separator`: defaults to `-`.
+- `replacements`: hash of characters (or strings) to custom replace before
+ generating the slug.
+- `maxLength`: maximum length of a slug. Defaults to the field's limit as
+ defined in the schema (when possible). Otherwise, no limit.
+- `slugger`: class that implements the `Muffin\Slug\SlugInterface`. Defaults
+ to `Muffin\Slug\Slugger\CakeSlugger`.
+- `unique:`: tells if slugs should be unique. Set this to a callable if you
+ want to customize how unique slugs are generated. Defaults to `true`.
+- `scope`: extra conditions used when checking a slug for uniqueness.
+- `implementedEvents`: events this behavior listens to.
+- `implementedFinders`: custom finders implemented by this behavior.
+- `implementedMethods`: mixin methods directly accessible from the table.
 
 ## Patches & Features
 
@@ -53,7 +90,7 @@ their own that I can ignore when I pull)
 To ensure your PRs are considered for upstream, you MUST follow the CakePHP coding standards. A `pre-commit`
 hook has been included to automatically run the code sniffs for you:
 
-```
+```bash
 ln -s ../../contrib/pre-commit .git/hooks/.
 ```
 
