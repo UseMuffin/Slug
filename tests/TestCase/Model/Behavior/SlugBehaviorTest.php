@@ -95,23 +95,30 @@ class SlugBehaviorTest extends TestCase
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['title', 'sub_title']]);
 
         $data = ['title' => 'foo', 'sub_title' => 'bar'];
-        $tag = $Articles->newEntity($data);
+        $article = $Articles->newEntity($data);
 
-        $result = $Articles->save($tag)->slug;
+        $result = $Articles->save($article)->slug;
         $expected = 'foo-bar';
         $this->assertEquals($expected, $result);
 
         $data = ['title' => 'foo', 'sub_title' => 'bar'];
-        $tag = $Articles->newEntity($data);
+        $article = $Articles->newEntity($data);
 
-        $result = $Articles->save($tag)->slug;
+        $result = $Articles->save($article)->slug;
         $expected = 'foo-bar-1';
         $this->assertEquals($expected, $result);
 
-        $data = ['title' => 'foo', 'sub_title' => 'bar-1'];
-        $tag = $Articles->newEntity($data);
+        $data = ['title' => 'foo', 'sub_title' => 'bar'];
+        $article = $Articles->newEntity($data);
 
-        $result = $Articles->save($tag)->slug;
+        $result = $Articles->save($article)->slug;
+        $expected = 'foo-bar-2';
+
+        $this->assertEquals($expected, $result);
+        $data = ['title' => 'foo', 'sub_title' => 'bar-1'];
+        $article = $Articles->newEntity($data);
+
+        $result = $Articles->save($article)->slug;
         $expected = 'foo-bar-1-1';
         $this->assertEquals($expected, $result);
 
