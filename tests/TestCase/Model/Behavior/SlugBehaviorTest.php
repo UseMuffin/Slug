@@ -103,6 +103,16 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testBeforeSaveDirtyField()
+    {
+        $data = ['name' => 'foo', 'slug' => 'bar'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'bar';
+        $this->assertEquals($expected, $result);
+    }
+
     public function testSlug()
     {
         $result = $this->Behavior->slug('foo/bar');
