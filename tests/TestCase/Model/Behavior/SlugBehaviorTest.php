@@ -78,6 +78,41 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testBeforeSaveOnUpdate()
+    {
+        $data = ['name' => 'foo'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'foo';
+        $this->assertEquals($expected, $result);
+
+        $tag->name = 'bar';
+        $result = $this->Tags->save($tag)->slug;
+        $this->assertEquals($expected, $result);
+
+        $this->Tags->behaviors()->Slug->config('onUpdate', true);
+        $tag->name = 'baz';
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'baz';
+        $this->assertEquals($expected, $result);
+
+        $tag->unsetProperty('name');
+        $tag->namespace = 'foobar';
+        $result = $this->Tags->save($tag)->slug;
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testBeforeSaveDirtyField()
+    {
+        $data = ['name' => 'foo', 'slug' => 'bar'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'bar';
+        $this->assertEquals($expected, $result);
+    }
+
     public function testSlug()
     {
         $result = $this->Behavior->slug('foo/bar');
