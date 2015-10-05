@@ -37,6 +37,8 @@ class SlugBehavior extends Behavior
      * - implementedEvents: Events this behavior listens to.
      * - implementedFinders: Custom finders implemented by this behavior.
      * - implementedMethods: Mixin methods directly accessible from the table.
+     * - onUpdate: Boolean indicating whether slug should be updated when
+     *   updating record, defaults to `false`.
      *
      * @var array
      */
@@ -64,6 +66,7 @@ class SlugBehavior extends Behavior
         'implementedMethods' => [
             'slug' => 'slug',
         ],
+        'onUpdate' => false
     ];
 
     /**
@@ -178,14 +181,15 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        $slugField = $this->config('field');
-        $fields = (array)$this->config('displayField');
-        $separator = $this->config('separator');
+        $config = $this->_config;
 
-        if (!$entity->isNew() || $entity->dirty($slugField)) {
+        $return = $entity->dirty($config['field']) || (!$entity->isNew() && !$config['onUpdate']);
+
+        if ($return) {
             return;
         }
 
+        $fields = (array)$config['displayField'];
         $parts = [];
         foreach ($fields as $field) {
             if ($entity->errors($field)) {
@@ -194,7 +198,8 @@ class SlugBehavior extends Behavior
             $parts[] = $entity->{$field};
         }
 
-        $entity->set($slugField, $this->slug($entity, implode($separator, $parts), $separator));
+        $slug = $this->slug($entity, implode($config['separator'], $parts), $config['separator']);
+        $entity->set($config['field'], $slug);
     }
 
     /**
