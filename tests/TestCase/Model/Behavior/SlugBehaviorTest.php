@@ -78,7 +78,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeOnUpdate()
+    public function testBeforeSaveOnUpdate()
     {
         $data = ['name' => 'foo'];
         $tag = $this->Tags->newEntity($data);
