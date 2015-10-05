@@ -192,9 +192,6 @@ class SlugBehavior extends Behavior
         $fields = (array)$config['displayField'];
         $parts = [];
         foreach ($fields as $field) {
-            if ($entity->errors($field)) {
-                return;
-            }
             if (!isset($entity->{$field}) && !$entity->isNew()) {
                 return;
             }
