@@ -96,6 +96,11 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Tags->save($tag)->slug;
         $expected = 'baz';
         $this->assertEquals($expected, $result);
+
+        $tag->unsetProperty('name');
+        $tag->namespace = 'foobar';
+        $result = $this->Tags->save($tag)->slug;
+        $this->assertEquals($expected, $result);
     }
 
     public function testSlug()

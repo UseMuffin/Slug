@@ -195,6 +195,9 @@ class SlugBehavior extends Behavior
             if ($entity->errors($field)) {
                 return;
             }
+            if (!isset($entity->{$field}) && !$entity->isNew()) {
+                return;
+            }
             $parts[] = $entity->{$field};
         }
 
