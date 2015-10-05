@@ -51,6 +51,8 @@ class SlugBehavior extends Behavior
             '?' => 'question',
             '+' => 'and',
             '&' => 'and',
+            '"' => '',
+            "'" => ''
         ],
         'maxLength' => null,
         'slugger' => 'Muffin\Slug\Slugger\CakeSlugger',

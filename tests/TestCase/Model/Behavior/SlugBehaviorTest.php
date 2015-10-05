@@ -122,6 +122,10 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Behavior->slug('foo/bar', '_');
         $expected = 'foo_bar';
         $this->assertEquals($expected, $result);
+
+        $result = $this->Behavior->slug('admad\'s "double quote "');
+        $expected = 'admads-double-quote';
+        $this->assertEquals($expected, $result);
     }
 
     public function testBeforeSaveMultiField()
