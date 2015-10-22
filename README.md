@@ -77,6 +77,8 @@ Slug comes with the following configuration options:
 - `implementedEvents`: events this behavior listens to.
 - `implementedFinders`: custom finders implemented by this behavior.
 - `implementedMethods`: mixin methods directly accessible from the table.
+- `onUpdate`: Boolean indicating whether slug should be updated when updating 
+  record, defaults to `false`.
 
 ## Patches & Features
 
