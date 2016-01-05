@@ -16,7 +16,7 @@ Slugging for CakePHP 3.x
 Using [Composer][composer]:
 
 ```bash
-composer require muffin/slug:dev-master
+composer require muffin/slug:~1.0
 ```
 
 To make your application load the plugin either run:
