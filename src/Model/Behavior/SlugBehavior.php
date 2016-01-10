@@ -7,6 +7,7 @@ use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
 use Muffin\Slug\SluggerInterface;
@@ -168,8 +169,10 @@ class SlugBehavior extends Behavior
     public function buildValidator(Event $event, Validator $validator, $name)
     {
         foreach ((array)$this->config('displayField') as $field) {
-            $validator->requirePresence($field, 'create')
-                ->notEmpty($field);
+            if (strpos($field, '.') === false) {
+                $validator->requirePresence($field, 'create')
+                    ->notEmpty($field);
+            }
         }
     }
 
@@ -198,11 +201,12 @@ class SlugBehavior extends Behavior
         $fields = (array)$config['displayField'];
         $parts = [];
         foreach ($fields as $field) {
-            if (!isset($entity->{$field}) && !$entity->isNew()) {
+            $value = Hash::get($entity, $field);
+
+            if ($value === null && !$entity->isNew()) {
                 return;
             }
 
-            $value = $entity->{$field};
             if (!empty($value) || is_numeric($value)) {
                 $parts[] = $value;
             }

@@ -12,7 +12,8 @@ class SlugBehaviorTest extends TestCase
     public $fixtures = [
         'plugin.Muffin/Slug.Tags',
         'plugin.Muffin/Slug.Articles',
-        'plugin.Muffin/Slug.ArticlesTags'
+        'plugin.Muffin/Slug.ArticlesTags',
+        'plugin.Muffin/Slug.Authors'
     ];
 
     public function setUp()
@@ -189,6 +190,23 @@ class SlugBehaviorTest extends TestCase
 
         $result = $Articles->save($article)->slug;
         $expected = 'foo';
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testBeforeSaveSlugGenerationWithAssociatedTableField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Authors = TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+
+        $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
+        $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
+
+        $data = ['title' => 'foo', 'sub_title' => 'unused'];
+        $article = $Articles->newEntity($data);
+        $article->author = $Authors->get(1);
+
+        $result = $Articles->save($article)->slug;
+        $expected = 'admad-foo';
         $this->assertEquals($expected, $result);
     }
 

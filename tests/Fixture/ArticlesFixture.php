@@ -14,6 +14,7 @@ class ArticlesFixture extends TestFixture
      */
     public $fields = [
         'id' => ['type' => 'integer'],
+        'author_id' => ['type' => 'integer'],
         'title' => ['type' => 'string', 'null' => false],
         'sub_title' => ['type' => 'string', 'null' => false],
         'slug' => ['type' => 'string', 'null' => false],
@@ -28,9 +29,9 @@ class ArticlesFixture extends TestFixture
      * @var array
      */
     public $records = [
-        ['title' => 'First Article', 'sub_title' => 'subtitle 1', 'slug' => 'first-title'],
-        ['title' => 'Second Article', 'sub_title' => 'subtitle 2', 'slug' => 'second-title'],
-        ['title' => 'Third Article', 'sub_title' => 'subtitle 3', 'slug' => 'third-title'],
+        ['author_id' => 1, 'title' => 'First Article', 'sub_title' => 'subtitle 1', 'slug' => 'first-title'],
+        ['author_id' => 1, 'title' => 'Second Article', 'sub_title' => 'subtitle 2', 'slug' => 'second-title'],
+        ['author_id' => 1, 'title' => 'Third Article', 'sub_title' => 'subtitle 3', 'slug' => 'third-title'],
     ];
 
     public function init()
