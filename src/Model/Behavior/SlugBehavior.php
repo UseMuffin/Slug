@@ -197,7 +197,11 @@ class SlugBehavior extends Behavior
             if (!isset($entity->{$field}) && !$entity->isNew()) {
                 return;
             }
-            $parts[] = $entity->{$field};
+
+            $value = $entity->{$field};
+            if (!empty($value) || is_numeric($value)) {
+                $parts[] = $value;
+            }
         }
 
         $slug = $this->slug($entity, implode($config['separator'], $parts), $config['separator']);
