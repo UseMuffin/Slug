@@ -167,6 +167,24 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testBeforeSaveMultiWithOptionalField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles->addBehavior('Muffin/Slug.Slug', [
+            'displayField' => ['title', 'sub_title'],
+            'implementedEvents' => [
+                'Model.beforeSave' => 'beforeSave',
+            ]
+        ]);
+
+        $data = ['title' => 'foo', 'sub_title' => ''];
+        $article = $Articles->newEntity($data);
+
+        $result = $Articles->save($article)->slug;
+        $expected = 'foo';
+        $this->assertEquals($expected, $result);
+    }
+
     public function testCustomSlugField()
     {
         $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
