@@ -29,7 +29,7 @@
         "issues": "https://github.com/usemuffin/slug/issues",
         "source": "https://github.com/usemuffin/slug"
     },
-    "require-dev": {
+    "require": {
         "cakephp/orm": "3.*"
     },
     "require-dev": {
