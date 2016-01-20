@@ -1,11 +1,12 @@
 {
     "name": "muffin/slug",
-    "description": "Slugging support for CakePHP 3",
+    "description": "Slugging support for CakePHP 3 ORM",
     "type": "cakephp-plugin",
     "keywords": [
         "cakephp",
         "muffin",
-        "slug"
+        "slug",
+        "orm"
     ],
     "homepage": "https://github.com/usemuffin/slug",
     "license": "MIT",
@@ -28,6 +29,9 @@
     "support": {
         "issues": "https://github.com/usemuffin/slug/issues",
         "source": "https://github.com/usemuffin/slug"
+    },
+    "require": {
+        "cakephp/orm": "3.*"
     },
     "require-dev": {
         "cakephp/cakephp": "~3.0",
