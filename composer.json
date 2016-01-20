@@ -30,6 +30,9 @@
         "source": "https://github.com/usemuffin/slug"
     },
     "require-dev": {
+        "cakephp/orm": "3.*"
+    },
+    "require-dev": {
         "cakephp/cakephp": "~3.0",
         "phpunit/phpunit": "4.1.*",
         "cocur/slugify": "^1.2"
