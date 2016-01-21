@@ -111,6 +111,13 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Tags->save($tag)->slug;
         $expected = 'bar';
         $this->assertEquals($expected, $result);
+
+        $data = ['name' => 'baz', 'slug' => ''];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'baz';
+        $this->assertEquals($expected, $result);
     }
 
     public function testSlug()
