@@ -185,9 +185,13 @@ class SlugBehavior extends Behavior
     {
         $config = $this->_config;
 
-        $return = $entity->dirty($config['field']) || (!$entity->isNew() && !$config['onUpdate']);
+        if (!$entity->isNew() && !$config['onUpdate']) {
+            return;
+        }
 
-        if ($return) {
+        if ($entity->dirty($config['field']) &&
+            (!$entity->isNew() || (!empty($entity->{$config['field']})))
+        ) {
             return;
         }
 
