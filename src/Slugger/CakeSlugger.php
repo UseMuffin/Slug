@@ -1,20 +1,21 @@
 <?php
 namespace Muffin\Slug\Slugger;
 
-use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use Muffin\Slug\SluggerInterface;
 
 /**
- * CakePHP slugger (using `Inflector::slug()`).
+ * CakePHP slugger.
  */
 class CakeSlugger implements SluggerInterface
 {
 
     /**
-     * Config options.
+     * Config options. You can set any valid option which Text::slug() takes
+     * besides the one listed below:
      *
      * - `lowercase` - Boolean indication whether slug should be lowercased.
-     *   Default to true.
+     *   Defaults to true.
      *
      * @var array
      */
@@ -31,10 +32,12 @@ class CakeSlugger implements SluggerInterface
      */
     public function slug($string, $replacement = '-')
     {
-        $string = Inflector::slug($string, $replacement);
+        $config = $this->config;
+        $config['replacement'] = $replacement;
+        $string = Text::slug($string, $config);
 
-        if ($this->config['lowercase']) {
-            return strtolower($string);
+        if ($config['lowercase']) {
+            return mb_strtolower($string);
         }
 
         return $string;
