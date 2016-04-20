@@ -9,14 +9,20 @@ Slugging for CakePHP 3.x
 
 ## Requirements
 
-- CakePHP 3.0+
+- CakePHP 3.2.7+ (for lower CakePHP versions use plugin version 1.0.*)
 
 ## Installation
 
 Using [Composer][composer]:
 
 ```bash
-composer require muffin/slug:~1.0
+composer require muffin/slug
+```
+
+or if your CakePHP is less than 3.2.7 use
+
+```bash
+composer require muffin/slug:1.0.*
 ```
 
 To make your application load the plugin either run:
@@ -38,10 +44,10 @@ To enable slugging add the behavior to your table classes in the
 ```php
 public function initialize(array $config)
 {
-  //etc
-  $this->addBehavior('Muffin/Slug.Slug', [
-    // Optionally define your custom options here (see Configuration)
-  ]);
+    //etc
+    $this->addBehavior('Muffin/Slug.Slug', [
+        // Optionally define your custom options here (see Configuration)
+    ]);
 }
 ```
 
@@ -77,8 +83,31 @@ Slug comes with the following configuration options:
 - `implementedEvents`: events this behavior listens to.
 - `implementedFinders`: custom finders implemented by this behavior.
 - `implementedMethods`: mixin methods directly accessible from the table.
-- `onUpdate`: Boolean indicating whether slug should be updated when updating 
+- `onUpdate`: Boolean indicating whether slug should be updated when updating
   record, defaults to `false`.
+
+## Sluggers
+
+The plugin contains two sluggers:
+
+### CakeSlugger
+
+The `CakeSlugger` uses `\Cake\Utility\Text::slug()` to generate slugs. In the
+behavior config you can set the `slugger` key as shown below to pass options to
+the `$options` arguments of `Text::slug()`.
+
+```php
+'slugger' => [
+    'className' => 'Muffin\Slug\Slugger\CakeSlugger',
+    'transliteratorId' => '<A valid ICU Transliterator ID here>'
+]
+```
+
+### ConcurSlugger
+
+The `ConcurSlugger` uses [concur/slugify](https://github.com/cocur/slugify) to generate slugs.
+You can use config array similar to the one shown above to pass options to
+`Cocur\Slugify\Slugify`'s constructor.
 
 ## Patches & Features
 
@@ -99,10 +128,6 @@ ln -s ../../contrib/pre-commit .git/hooks/.
 ## Bugs & Feedback
 
 http://github.com/usemuffin/slug/issues
-
-## Credits
-
-This was originally inspired by @dereuromark's [`SluggedBehavior`](https://github.com/dereuromark/cakephp-tools/blob/cake3/src/Model/Behavior/SluggedBehavior.php).
 
 ## License
 
