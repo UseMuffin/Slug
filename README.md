@@ -56,7 +56,7 @@ public function initialize(array $config)
 > configuration option.
 
 ### Searching
-If you want to find a record using it's slug, a custom finder is provided by the plugin.
+If you want to find a record using its slug, a custom finder is provided by the plugin.
 
 ```php
 // src/Controller/ExamplesController.php
