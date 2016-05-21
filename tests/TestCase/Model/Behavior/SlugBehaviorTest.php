@@ -121,6 +121,27 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * Make sure no slug is generated when `displayField` is empty.
+     */
+    public function testBeforeSaveEmptyField()
+    {
+        $this->Tags->removeBehavior('Slug');
+        $this->Tags->addBehavior('Muffin/Slug.Slug', [
+            'displayField' => 'namespace',
+            'implementedEvents' => [
+                'Model.beforeSave' => 'beforeSave'
+            ]
+        ]);
+
+        $data = ['name' => 'foo'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = null;
+        $this->assertEquals($expected, $result);
+    }
+
     public function testSlug()
     {
         $result = $this->Behavior->slug('foo/bar');

@@ -212,6 +212,10 @@ class SlugBehavior extends Behavior
             }
         }
 
+        if (!count($parts)) {
+            return;
+        }
+
         $slug = $this->slug($entity, implode($config['separator'], $parts), $config['separator']);
         $entity->set($config['field'], $slug);
     }
