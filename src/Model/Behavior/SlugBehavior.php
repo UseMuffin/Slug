@@ -11,7 +11,6 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
 use Muffin\Slug\SluggerInterface;
-use UnexpectedValueException;
 
 /**
  * Slug behavior.
@@ -210,6 +209,10 @@ class SlugBehavior extends Behavior
             if (!empty($value) || is_numeric($value)) {
                 $parts[] = $value;
             }
+        }
+
+        if (!count($parts)) {
+            return;
         }
 
         $slug = $this->slug($entity, implode($config['separator'], $parts), $config['separator']);
