@@ -11,7 +11,6 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
 use Muffin\Slug\SluggerInterface;
-use UnexpectedValueException;
 
 /**
  * Slug behavior.
