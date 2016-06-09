@@ -8,6 +8,7 @@ use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
 use Muffin\Slug\SluggerInterface;
@@ -292,7 +293,7 @@ class SlugBehavior extends Behavior
 
         $i = 0;
         $suffix = '';
-        $length = $this->config('length');
+        $length = $this->config('maxLength');
 
         while ($this->_table->exists($conditions)) {
             $i++;
@@ -320,6 +321,14 @@ class SlugBehavior extends Behavior
         if (is_object($callable) && $callable instanceof SluggerInterface) {
             $callable = [$callable, 'slug'];
         }
-        return $callable(str_replace(array_keys($replacements), $replacements, $string), $separator);
+        $slug = $callable(str_replace(array_keys($replacements), $replacements, $string), $separator);
+        if (!empty($this->config('maxLength'))) {
+            $slug = Text::truncate(
+                $slug,
+                $this->config('maxLength'),
+                ['ellipsis' => '']
+            );
+        }
+        return $slug;
     }
 }
