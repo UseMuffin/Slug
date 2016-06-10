@@ -259,12 +259,11 @@ class SlugBehaviorTest extends TestCase
         $expected = 'this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extr';
         $this->assertEquals($expected, $result);
 
-        $data2 = ['name' => 'This is an extremely long title of more than 255 characters. This is an extremely long title of more than 255 characters. This is an extremely long title of more than 255 characters. This is an extremely long title of more than 255 characters. This is an extremely long title of more than 255 characters.'];
-        $tag2 = $this->Tags->newEntity($data2);
+        $tag = $this->Tags->newEntity($data);
 
-        $result2 = $this->Tags->save($tag2)->slug;
-        $expected2 = 'this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-ex-1';
-        $this->assertEquals($expected2, $result2);
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-ex-1';
+        $this->assertEquals($expected, $result);
     }
 
 
@@ -282,12 +281,12 @@ class SlugBehaviorTest extends TestCase
         $expected = 'this-tag-n';
         $this->assertEquals($expected, $result);
 
-        $data2 = ['name' => 'This tag name is not the same, but should cause a duplicate slug.'];
-        $tag2 = $this->Tags->newEntity($data2);
+        $data = ['name' => 'This tag name is not the same, but should cause a duplicate slug.'];
+        $tag = $this->Tags->newEntity($data);
 
-        $result2 = $this->Tags->save($tag2)->slug;
-        $expected2 = 'this-tag-1';
-        $this->assertEquals($expected2, $result2);
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'this-tag-1';
+        $this->assertEquals($expected, $result);
     }
 
     /**
