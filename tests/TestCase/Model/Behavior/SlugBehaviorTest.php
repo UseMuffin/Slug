@@ -337,6 +337,9 @@ class SlugBehaviorTest extends TestCase
             'name' => 'Dark Color',
         ];
         $this->assertEquals($expected, $result);
+
+        $query = $this->Tags->find('slugged', ['slug' => 0]);
+        $this->assertInstanceOf('Cake\ORM\Query', $query);
     }
 
     /**

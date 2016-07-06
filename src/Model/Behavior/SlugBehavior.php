@@ -229,7 +229,7 @@ class SlugBehavior extends Behavior
      */
     public function findSlugged(Query $query, array $options)
     {
-        if (empty($options['slug'])) {
+        if (!isset($options['slug'])) {
             throw new InvalidArgumentException('The `slug` key is required by the `slugged` finder.');
         }
 
