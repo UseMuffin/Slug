@@ -80,7 +80,11 @@ Slug comes with the following configuration options:
 - `unique:`: tells if slugs should be unique. Set this to a callable if you
  want to customize how unique slugs are generated. Defaults to `true`.
 - `scope`: extra conditions used when checking a slug for uniqueness.
-- `implementedEvents`: events this behavior listens to.
+- `implementedEvents`: events this behavior listens to. Defaults to
+  `['Model.buildValidator' => 'buildValidator', 'Model.beforeSave' => 'beforeSave']`.
+  By default the behavior adds validation for the `displayField` fields to make
+  them required on record creating. If you don't want these auto added validations
+  you can set `implementedEvents` to just `['Model.beforeSave' => 'beforeSave']`.
 - `onUpdate`: Boolean indicating whether slug should be updated when updating
   record, defaults to `false`.
 
