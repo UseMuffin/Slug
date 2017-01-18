@@ -36,8 +36,6 @@ class SlugBehavior extends Behavior
      *     want to customize how unique slugs are generated. Defaults to `true`.
      * - scope: Extra conditions used when checking a slug for uniqueness.
      * - implementedEvents: Events this behavior listens to.
-     * - implementedFinders: Custom finders implemented by this behavior.
-     * - implementedMethods: Mixin methods directly accessible from the table.
      * - onUpdate: Boolean indicating whether slug should be updated when
      *   updating record, defaults to `false`.
      *
