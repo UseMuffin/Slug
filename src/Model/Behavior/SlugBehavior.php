@@ -126,6 +126,7 @@ class SlugBehavior extends Behavior
     {
         if ($slugger !== null) {
             $this->_slugger = $slugger;
+
             return;
         }
 
@@ -329,6 +330,7 @@ class SlugBehavior extends Behavior
                 ['ellipsis' => '']
             );
         }
+
         return $slug;
     }
 }

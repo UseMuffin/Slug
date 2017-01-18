@@ -36,6 +36,7 @@ class CocurSlugger implements SluggerInterface
         $options = $this->config;
         $regex = $options['regex'];
         unset($options['regex']);
+
         return Slugify::create($regex, $options)->slugify($string, $replacement);
     }
 }
