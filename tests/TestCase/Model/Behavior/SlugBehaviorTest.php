@@ -266,7 +266,6 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-
     public function testCustomMaxLength()
     {
         $this->Tags->removeBehavior('Slug');
