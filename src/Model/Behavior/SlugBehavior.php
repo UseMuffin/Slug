@@ -46,7 +46,7 @@ class SlugBehavior extends Behavior
      *
      * @var array
      */
-    public $_defaultConfig = [
+    protected $_defaultConfig = [
         'field' => 'slug',
         'displayField' => null,
         'separator' => '-',
