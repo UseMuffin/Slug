@@ -266,7 +266,6 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-
     public function testCustomMaxLength()
     {
         $this->Tags->removeBehavior('Slug');
@@ -389,5 +388,23 @@ class SlugBehaviorTest extends TestCase
 
         $result = $this->Behavior->slug('FOO');
         $this->assertEquals('foo', $result);
+    }
+
+    public function testMultipleDisplayFieldsForSlug()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+
+        $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
+        $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
+
+        $entity = $Articles->get(1, [
+            'contain' => [
+                'Authors'
+            ]
+        ]);
+
+        $slug = $Articles->slug($entity);
+        $this->assertEquals('admad-first-article', $slug);
     }
 }
