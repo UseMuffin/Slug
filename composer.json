@@ -35,7 +35,7 @@
     },
     "require-dev": {
         "cakephp/cakephp": "^3.2.7",
-        "phpunit/phpunit": "4.1.*",
+        "phpunit/phpunit": "<6.0",
         "cocur/slugify": "^1.2"
     },
     "autoload": {
