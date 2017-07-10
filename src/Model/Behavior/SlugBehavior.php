@@ -262,7 +262,7 @@ class SlugBehavior extends Behavior
                 if ($entity->errors($field)) {
                     throw new InvalidArgumentException();
                 }
-                $string[] = $entity->get($field);
+                $string[] = Hash::get($entity, $field);
             }
             $string = implode($separator, $string);
         }
