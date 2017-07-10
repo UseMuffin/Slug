@@ -1,7 +1,7 @@
 # Slug
 
 [![Build Status](https://img.shields.io/travis/UseMuffin/Slug/master.svg?style=flat-square)](https://travis-ci.org/UseMuffin/Slug)
-[![Coverage](https://img.shields.io/coveralls/UseMuffin/Slug/master.svg?style=flat-square)](https://coveralls.io/r/UseMuffin/Slug)
+[![Coverage](https://img.shields.io/codecov/c/github/UseMuffin/Slug/master.svg?style=flat-square)](https://codecov.io/github/UseMuffin/Slug)
 [![Total Downloads](https://img.shields.io/packagist/dt/muffin/slug.svg?style=flat-square)](https://packagist.org/packages/muffin/slug)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 

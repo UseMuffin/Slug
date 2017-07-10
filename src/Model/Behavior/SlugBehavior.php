@@ -46,7 +46,7 @@ class SlugBehavior extends Behavior
      *
      * @var array
      */
-    public $_defaultConfig = [
+    protected $_defaultConfig = [
         'field' => 'slug',
         'displayField' => null,
         'separator' => '-',
@@ -262,7 +262,7 @@ class SlugBehavior extends Behavior
                 if ($entity->errors($field)) {
                     throw new InvalidArgumentException();
                 }
-                $string[] = $entity->get($field);
+                $string[] = $value = Hash::get($entity, $field);
             }
             $string = implode($separator, $string);
         }

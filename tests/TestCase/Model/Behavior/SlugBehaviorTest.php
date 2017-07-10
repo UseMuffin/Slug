@@ -157,6 +157,23 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testSlugWithAssociatedTableField()
+    {
+        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Authors = TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+
+        $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
+        $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
+
+        $data = ['title' => 'foo', 'sub_title' => 'unused'];
+        $article = $Articles->newEntity($data);
+        $article->author = $Authors->get(1);
+
+        $result = $Articles->slug($article);
+        $expected = 'admad-foo';
+        $this->assertEquals($expected, $result);
+    }
+
     public function testBeforeSaveMultiField()
     {
         $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
@@ -265,7 +282,6 @@ class SlugBehaviorTest extends TestCase
         $expected = 'this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-extremely-long-title-of-more-than-255-characters-this-is-an-ex-1';
         $this->assertEquals($expected, $result);
     }
-
 
     public function testCustomMaxLength()
     {
