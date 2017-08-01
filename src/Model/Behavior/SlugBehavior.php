@@ -193,30 +193,31 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        $config = $this->_config;
-
-        if (!$entity->isNew() && !$config['onUpdate']) {
+        $onUpdate = $this->config('onUpdate');
+        if (!$entity->isNew() && !$onUpdate) {
             return;
         }
 
-        if (!$config['onDirty']
-            && $entity->dirty($config['field'])
-            && (!$entity->isNew() || (!empty($entity->{$config['field']})))
+        $onDirty = $this->config('onDirty');
+        $field = $this->config('field');
+        if (!$onDirty
+            && $entity->dirty($field)
+            && (!$entity->isNew() || (!empty($entity->{$field})))
         ) {
             return;
         }
 
-        if ($entity->dirty($config['field']) && !empty($entity->{$config['field']})) {
-            $slug = $this->slug($entity, $entity->{$config['field']}, $config['separator']);
-            $entity->set($config['field'], $slug);
+        $separator = $this->config('separator');
+        if ($entity->dirty($field) && !empty($entity->{$field})) {
+            $slug = $this->slug($entity, $entity->{$field}, $separator);
+            $entity->set($field, $slug);
 
             return;
         }
 
-        $fields = (array)$config['displayField'];
         $parts = [];
-        foreach ($fields as $field) {
-            $value = Hash::get($entity, $field);
+        foreach ((array)$this->config('displayField') as $displayField) {
+            $value = Hash::get($entity, $displayField);
 
             if ($value === null && !$entity->isNew()) {
                 return;
@@ -231,8 +232,8 @@ class SlugBehavior extends Behavior
             return;
         }
 
-        $slug = $this->slug($entity, implode($config['separator'], $parts), $config['separator']);
-        $entity->set($config['field'], $slug);
+        $slug = $this->slug($entity, implode($separator, $parts), $separator);
+        $entity->set($field, $slug);
     }
 
     /**
@@ -284,7 +285,8 @@ class SlugBehavior extends Behavior
 
         $slug = $this->_slug($string, $separator);
 
-        if (isset($entity) && $unique = $this->config('unique')) {
+        $unique = $this->config('unique');
+        if (isset($entity) && $unique) {
             $slug = $unique($entity, $slug, $separator);
         }
 
