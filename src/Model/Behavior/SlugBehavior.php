@@ -256,11 +256,15 @@ class SlugBehavior extends Behavior
      *
      * @param \Cake\ORM\Entity|string $entity Entity to create slug for
      * @param string $string String to create slug for.
-     * @param string $separator Separator.
+     * @param string|null $separator Separator.
      * @return string Slug.
      */
-    public function slug($entity, $string = null, $separator = '-')
+    public function slug($entity, $string = null, $separator = null)
     {
+        if ($separator === null) {
+            $separator = $this->config('separator');
+        }
+
         if (is_string($entity)) {
             if ($string !== null) {
                 $separator = $string;
@@ -295,7 +299,7 @@ class SlugBehavior extends Behavior
      * @param string $separator Separator.
      * @return string Unique slug.
      */
-    protected function _uniqueSlug(Entity $entity, $slug, $separator = '-')
+    protected function _uniqueSlug(Entity $entity, $slug, $separator)
     {
         $primaryKey = $this->_table->primaryKey();
         $field = $this->_table->aliasField($this->config('field'));
