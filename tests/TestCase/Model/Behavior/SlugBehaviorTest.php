@@ -119,6 +119,31 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Tags->save($tag)->slug;
         $expected = 'baz';
         $this->assertEquals($expected, $result);
+
+        $this->Tags->behaviors()->Slug->config('onDirty', true);
+
+        $data = ['name' => 'I am nice', 'slug' => 'make ME Nice'];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'make-me-nice';
+        $this->assertEquals($expected, $result);
+
+        $data = ['name' => 'Fooz', 'slug' => ''];
+        $tag = $this->Tags->newEntity($data);
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'fooz';
+        $this->assertEquals($expected, $result);
+
+        $this->Tags->behaviors()->Slug->config('onUpdate', true);
+
+        $tag = $this->Tags->find()->where(['name' => 'I am nice'])->first();
+        $tag->slug = 'I is NICE';
+
+        $result = $this->Tags->save($tag)->slug;
+        $expected = 'i-is-nice';
+        $this->assertEquals($expected, $result);
     }
 
     /**

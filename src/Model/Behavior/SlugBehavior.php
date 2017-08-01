@@ -43,6 +43,8 @@ class SlugBehavior extends Behavior
      *    `['Model.beforeSave' => 'beforeSave']`.
      * - onUpdate: Boolean indicating whether slug should be updated when
      *   updating record, defaults to `false`.
+     * - onDirty: Boolean indicating whether slug should be updated when
+     *   slug field is dirty, defaults to `false`.
      *
      * @var array
      */
@@ -72,7 +74,8 @@ class SlugBehavior extends Behavior
         'implementedMethods' => [
             'slug' => 'slug',
         ],
-        'onUpdate' => false
+        'onUpdate' => false,
+        'onDirty' => false
     ];
 
     /**
@@ -196,9 +199,17 @@ class SlugBehavior extends Behavior
             return;
         }
 
-        if ($entity->dirty($config['field']) &&
-            (!$entity->isNew() || (!empty($entity->{$config['field']})))
+        if (!$config['onDirty']
+            && $entity->dirty($config['field'])
+            && (!$entity->isNew() || (!empty($entity->{$config['field']})))
         ) {
+            return;
+        }
+
+        if ($entity->dirty($config['field']) && !empty($entity->{$config['field']})) {
+            $slug = $this->slug($entity, $entity->{$config['field']}, $config['separator']);
+            $entity->set($config['field'], $slug);
+
             return;
         }
 
