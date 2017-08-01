@@ -79,9 +79,9 @@ class SlugBehavior extends Behavior
     ];
 
     /**
-     * Slugger instance
+     * Slugger instance or callable
      *
-     * @var \Muffin\Slug\SluggerInterface
+     * @var \Muffin\Slug\SluggerInterface|callable
      */
     protected $_slugger;
 
@@ -124,16 +124,16 @@ class SlugBehavior extends Behavior
     /**
      * Get/set slugger instance.
      *
-     * @param callable $slugger Sets slugger instance if passed.
+     * @param \Muffin\Slug\SluggerInterface|callable $slugger Sets slugger instance if passed.
      *   If no argument is passed return slugger intance based on behavior config.
-     * @return callable|void
+     * @return callable|\Muffin\Slug\SluggerInterface|null
      */
     public function slugger($slugger = null)
     {
         if ($slugger !== null) {
             $this->_slugger = $slugger;
 
-            return;
+            return null;
         }
 
         if ($this->_slugger !== null) {
