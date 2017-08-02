@@ -43,6 +43,8 @@ class SlugBehavior extends Behavior
      *    `['Model.beforeSave' => 'beforeSave']`.
      * - onUpdate: Boolean indicating whether slug should be updated when
      *   updating record, defaults to `false`.
+     * - onDirty: Boolean indicating whether slug should be updated when
+     *   slug field is dirty, defaults to `false`.
      *
      * @var array
      */
@@ -72,13 +74,14 @@ class SlugBehavior extends Behavior
         'implementedMethods' => [
             'slug' => 'slug',
         ],
-        'onUpdate' => false
+        'onUpdate' => false,
+        'onDirty' => false
     ];
 
     /**
-     * Slugger instance
+     * Slugger instance or callable
      *
-     * @var \Muffin\Slug\SluggerInterface
+     * @var \Muffin\Slug\SluggerInterface|callable
      */
     protected $_slugger;
 
@@ -121,16 +124,16 @@ class SlugBehavior extends Behavior
     /**
      * Get/set slugger instance.
      *
-     * @param callable $slugger Sets slugger instance if passed.
+     * @param \Muffin\Slug\SluggerInterface|callable $slugger Sets slugger instance if passed.
      *   If no argument is passed return slugger intance based on behavior config.
-     * @return callable|void
+     * @return callable|\Muffin\Slug\SluggerInterface|null
      */
     public function slugger($slugger = null)
     {
         if ($slugger !== null) {
             $this->_slugger = $slugger;
 
-            return;
+            return null;
         }
 
         if ($this->_slugger !== null) {
@@ -190,22 +193,31 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        $config = $this->_config;
-
-        if (!$entity->isNew() && !$config['onUpdate']) {
+        $onUpdate = $this->config('onUpdate');
+        if (!$entity->isNew() && !$onUpdate) {
             return;
         }
 
-        if ($entity->dirty($config['field']) &&
-            (!$entity->isNew() || (!empty($entity->{$config['field']})))
+        $onDirty = $this->config('onDirty');
+        $field = $this->config('field');
+        if (!$onDirty
+            && $entity->dirty($field)
+            && (!$entity->isNew() || (!empty($entity->{$field})))
         ) {
             return;
         }
 
-        $fields = (array)$config['displayField'];
+        $separator = $this->config('separator');
+        if ($entity->dirty($field) && !empty($entity->{$field})) {
+            $slug = $this->slug($entity, $entity->{$field}, $separator);
+            $entity->set($field, $slug);
+
+            return;
+        }
+
         $parts = [];
-        foreach ($fields as $field) {
-            $value = Hash::get($entity, $field);
+        foreach ((array)$this->config('displayField') as $displayField) {
+            $value = Hash::get($entity, $displayField);
 
             if ($value === null && !$entity->isNew()) {
                 return;
@@ -220,8 +232,8 @@ class SlugBehavior extends Behavior
             return;
         }
 
-        $slug = $this->slug($entity, implode($config['separator'], $parts), $config['separator']);
-        $entity->set($config['field'], $slug);
+        $slug = $this->slug($entity, implode($separator, $parts), $separator);
+        $entity->set($field, $slug);
     }
 
     /**
@@ -245,11 +257,15 @@ class SlugBehavior extends Behavior
      *
      * @param \Cake\ORM\Entity|string $entity Entity to create slug for
      * @param string $string String to create slug for.
-     * @param string $separator Separator.
+     * @param string|null $separator Separator.
      * @return string Slug.
      */
-    public function slug($entity, $string = null, $separator = '-')
+    public function slug($entity, $string = null, $separator = null)
     {
+        if ($separator === null) {
+            $separator = $this->config('separator');
+        }
+
         if (is_string($entity)) {
             if ($string !== null) {
                 $separator = $string;
@@ -269,7 +285,8 @@ class SlugBehavior extends Behavior
 
         $slug = $this->_slug($string, $separator);
 
-        if (isset($entity) && $unique = $this->config('unique')) {
+        $unique = $this->config('unique');
+        if (isset($entity) && $unique) {
             $slug = $unique($entity, $slug, $separator);
         }
 
@@ -284,7 +301,7 @@ class SlugBehavior extends Behavior
      * @param string $separator Separator.
      * @return string Unique slug.
      */
-    protected function _uniqueSlug(Entity $entity, $slug, $separator = '-')
+    protected function _uniqueSlug(Entity $entity, $slug, $separator)
     {
         $primaryKey = $this->_table->primaryKey();
         $field = $this->_table->aliasField($this->config('field'));
