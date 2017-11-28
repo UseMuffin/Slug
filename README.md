@@ -87,6 +87,8 @@ Slug comes with the following configuration options:
   you can set `implementedEvents` to just `['Model.beforeSave' => 'beforeSave']`.
 - `onUpdate`: Boolean indicating whether slug should be updated when updating
   record, defaults to `false`.
+- `onDirty` Boolean indicating whether slug should be updated when slug field 
+  is dirty (has a preset value custom value), defaults to `false`.
 
 ## Sluggers
 
