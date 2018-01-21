@@ -303,13 +303,13 @@ class SlugBehavior extends Behavior
      */
     protected function _uniqueSlug(Entity $entity, $slug, $separator)
     {
-        $primaryKey = $this->_table->primaryKey();
+        $primaryColumns = (array)$this->_table->primaryKey();
         $field = $this->_table->aliasField($this->config('field'));
 
         $conditions = [$field => $slug];
         $conditions += $this->config('scope');
-        if ($id = $entity->{$primaryKey}) {
-            $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
+        foreach ($entity->extract($primaryColumns) as $k => $v) {
+            $conditions['NOT'][$this->_table->aliasField($k)] = $v;
         }
 
         $i = 0;
