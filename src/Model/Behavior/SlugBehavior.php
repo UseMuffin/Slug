@@ -58,7 +58,7 @@ class SlugBehavior extends Behavior
             '+' => 'and',
             '&' => 'and',
             '"' => '',
-            "'" => ''
+            "'" => '',
         ],
         'maxLength' => null,
         'slugger' => 'Muffin\Slug\Slugger\CakeSlugger',
@@ -75,7 +75,7 @@ class SlugBehavior extends Behavior
             'slug' => 'slug',
         ],
         'onUpdate' => false,
-        'onDirty' => false
+        'onDirty' => false,
     ];
 
     /**
@@ -108,16 +108,19 @@ class SlugBehavior extends Behavior
      */
     public function initialize(array $config)
     {
-        if (!$this->config('displayField')) {
-            $this->config('displayField', $this->_table->displayField());
+        if (!$this->getConfig('displayField')) {
+            $this->setConfig('displayField', $this->_table->getDisplayField());
         }
 
-        if ($this->config('maxLength') === null) {
-            $this->config('maxLength', $this->_table->schema()->column($this->config('field'))['length']);
+        if ($this->getConfig('maxLength') === null) {
+            $this->setConfig(
+                'maxLength',
+                $this->_table->getSchema()->getColumn($this->getConfig('field'))['length']
+            );
         }
 
-        if ($this->config('unique') === true) {
-            $this->config('unique', [$this, '_uniqueSlug']);
+        if ($this->getConfig('unique') === true) {
+            $this->setConfig('unique', [$this, '_uniqueSlug']);
         }
     }
 
@@ -140,7 +143,7 @@ class SlugBehavior extends Behavior
             return $this->_slugger;
         }
 
-        $slugger = $this->config('slugger');
+        $slugger = $this->getConfig('slugger');
 
         if (is_string($slugger)) {
             $this->_slugger = new $slugger();
@@ -162,7 +165,7 @@ class SlugBehavior extends Behavior
      */
     public function implementedEvents()
     {
-        return $this->config('implementedEvents');
+        return $this->getConfig('implementedEvents');
     }
 
     /**
@@ -175,7 +178,7 @@ class SlugBehavior extends Behavior
      */
     public function buildValidator(Event $event, Validator $validator, $name)
     {
-        foreach ((array)$this->config('displayField') as $field) {
+        foreach ((array)$this->getConfig('displayField') as $field) {
             if (strpos($field, '.') === false) {
                 $validator->requirePresence($field, 'create')
                     ->notEmpty($field);
@@ -193,22 +196,22 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        $onUpdate = $this->config('onUpdate');
+        $onUpdate = $this->getConfig('onUpdate');
         if (!$entity->isNew() && !$onUpdate) {
             return;
         }
 
-        $onDirty = $this->config('onDirty');
-        $field = $this->config('field');
+        $onDirty = $this->getConfig('onDirty');
+        $field = $this->getConfig('field');
         if (!$onDirty
-            && $entity->dirty($field)
+            && $entity->isDirty($field)
             && (!$entity->isNew() || (!empty($entity->{$field})))
         ) {
             return;
         }
 
-        $separator = $this->config('separator');
-        if ($entity->dirty($field) && !empty($entity->{$field})) {
+        $separator = $this->getConfig('separator');
+        if ($entity->isDirty($field) && !empty($entity->{$field})) {
             $slug = $this->slug($entity, $entity->{$field}, $separator);
             $entity->set($field, $slug);
 
@@ -216,7 +219,7 @@ class SlugBehavior extends Behavior
         }
 
         $parts = [];
-        foreach ((array)$this->config('displayField') as $displayField) {
+        foreach ((array)$this->getConfig('displayField') as $displayField) {
             $value = Hash::get($entity, $displayField);
 
             if ($value === null && !$entity->isNew()) {
@@ -249,7 +252,9 @@ class SlugBehavior extends Behavior
             throw new InvalidArgumentException('The `slug` key is required by the `slugged` finder.');
         }
 
-        return $query->where([$this->_table->aliasField($this->config('field')) => $options['slug']]);
+        return $query->where([
+            $this->_table->aliasField($this->getConfig('field')) => $options['slug'],
+        ]);
     }
 
     /**
@@ -263,7 +268,7 @@ class SlugBehavior extends Behavior
     public function slug($entity, $string = null, $separator = null)
     {
         if ($separator === null) {
-            $separator = $this->config('separator');
+            $separator = $this->getConfig('separator');
         }
 
         if (is_string($entity)) {
@@ -274,8 +279,8 @@ class SlugBehavior extends Behavior
             unset($entity);
         } elseif (($entity instanceof Entity) && $string === null) {
             $string = [];
-            foreach ((array)$this->config('displayField') as $field) {
-                if ($entity->errors($field)) {
+            foreach ((array)$this->getConfig('displayField') as $field) {
+                if ($entity->getError($field)) {
                     throw new InvalidArgumentException();
                 }
                 $string[] = $value = Hash::get($entity, $field);
@@ -285,7 +290,7 @@ class SlugBehavior extends Behavior
 
         $slug = $this->_slug($string, $separator);
 
-        $unique = $this->config('unique');
+        $unique = $this->getConfig('unique');
         if (isset($entity) && $unique) {
             $slug = $unique($entity, $slug, $separator);
         }
@@ -303,18 +308,19 @@ class SlugBehavior extends Behavior
      */
     protected function _uniqueSlug(Entity $entity, $slug, $separator)
     {
-        $primaryKey = $this->_table->primaryKey();
-        $field = $this->_table->aliasField($this->config('field'));
+        /** @var string $primaryKey */
+        $primaryKey = $this->_table->getPrimaryKey();
+        $field = $this->_table->aliasField($this->getConfig('field'));
 
         $conditions = [$field => $slug];
-        $conditions += $this->config('scope');
+        $conditions += $this->getConfig('scope');
         if ($id = $entity->{$primaryKey}) {
             $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
         }
 
         $i = 0;
         $suffix = '';
-        $length = $this->config('maxLength');
+        $length = $this->getConfig('maxLength');
 
         while ($this->_table->exists($conditions)) {
             $i++;
@@ -337,16 +343,16 @@ class SlugBehavior extends Behavior
      */
     protected function _slug($string, $separator)
     {
-        $replacements = $this->config('replacements');
+        $replacements = $this->getConfig('replacements');
         $callable = $this->slugger();
         if (is_object($callable) && $callable instanceof SluggerInterface) {
             $callable = [$callable, 'slug'];
         }
         $slug = $callable(str_replace(array_keys($replacements), $replacements, $string), $separator);
-        if (!empty($this->config('maxLength'))) {
+        if (!empty($this->getConfig('maxLength'))) {
             $slug = Text::truncate(
                 $slug,
-                $this->config('maxLength'),
+                $this->getConfig('maxLength'),
                 ['ellipsis' => '']
             );
         }
