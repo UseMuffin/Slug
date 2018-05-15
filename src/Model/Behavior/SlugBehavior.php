@@ -299,6 +299,35 @@ class SlugBehavior extends Behavior
     }
 
     /**
+     * Builds the conditions
+     *
+     * @param \Cake\ORM\Entity $entity Entity.
+     * @param string $slug Slug
+     * @return array
+     */
+    protected function _conditions($entity, $slug)
+    {
+        /** @var string $primaryKey */
+        $primaryKey = $this->_table->getPrimaryKey();
+        $field = $this->_table->aliasField($this->getConfig('field'));
+
+        $conditions = [$field => $slug];
+
+        if (is_callable($this->getConfig('scope'))) {
+            $scope = $this->getConfig('scope');
+            $conditions += $scope($entity);
+        } else {
+            $conditions += $this->getConfig('scope');
+        }
+
+        if ($id = $entity->{$primaryKey}) {
+            $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
+        }
+
+        return $conditions;
+    }
+
+    /**
      * Returns a unique slug.
      *
      * @param \Cake\ORM\Entity $entity Entity.
@@ -312,11 +341,7 @@ class SlugBehavior extends Behavior
         $primaryKey = $this->_table->getPrimaryKey();
         $field = $this->_table->aliasField($this->getConfig('field'));
 
-        $conditions = [$field => $slug];
-        $conditions += $this->getConfig('scope');
-        if ($id = $entity->{$primaryKey}) {
-            $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
-        }
+        $conditions = $this->_conditions($entity, $slug);
 
         $i = 0;
         $suffix = '';
