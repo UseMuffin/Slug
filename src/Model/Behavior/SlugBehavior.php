@@ -313,7 +313,14 @@ class SlugBehavior extends Behavior
         $field = $this->_table->aliasField($this->getConfig('field'));
 
         $conditions = [$field => $slug];
-        $conditions += $this->getConfig('scope');
+
+        if (is_callable($this->getConfig('scope'))) {
+            $scope = $this->getConfig('scope');
+            $conditions += $scope($entity);
+        } else {
+            $conditions += $this->getConfig('scope');
+        }
+
         if ($id = $entity->{$primaryKey}) {
             $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
         }
