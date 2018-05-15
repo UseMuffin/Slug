@@ -218,12 +218,29 @@ class SlugBehavior extends Behavior
             return;
         }
 
+        $parts = $this->_getPartsFromEntity($entity);
+        if (!count($parts)) {
+            return;
+        }
+
+        $slug = $this->slug($entity, implode($separator, $parts), $separator);
+        $entity->set($field, $slug);
+    }
+
+    /**
+     * Gets the parts from an entity
+     *
+     * @param \Cake\Datasource\EntityInterface
+     * @return array
+     */
+    protected function _getPartsFromEntity($entity)
+    {
         $parts = [];
         foreach ((array)$this->getConfig('displayField') as $displayField) {
             $value = Hash::get($entity, $displayField);
 
             if ($value === null && !$entity->isNew()) {
-                return;
+                return [];
             }
 
             if (!empty($value) || is_numeric($value)) {
@@ -231,12 +248,7 @@ class SlugBehavior extends Behavior
             }
         }
 
-        if (!count($parts)) {
-            return;
-        }
-
-        $slug = $this->slug($entity, implode($separator, $parts), $separator);
-        $entity->set($field, $slug);
+        return $parts;
     }
 
     /**
@@ -278,14 +290,7 @@ class SlugBehavior extends Behavior
             $string = $entity;
             unset($entity);
         } elseif (($entity instanceof Entity) && $string === null) {
-            $string = [];
-            foreach ((array)$this->getConfig('displayField') as $field) {
-                if ($entity->getError($field)) {
-                    throw new InvalidArgumentException();
-                }
-                $string[] = $value = Hash::get($entity, $field);
-            }
-            $string = implode($separator, $string);
+            $string = $this->_getSlugStringFromEntity($entity, $separator);
         }
 
         $slug = $this->_slug($string, $separator);
@@ -296,6 +301,26 @@ class SlugBehavior extends Behavior
         }
 
         return $slug;
+    }
+
+    /**
+     * Gets the slug string based on an entity
+     *
+     * @param \Cake\Datasource\EntityInterface $entity Entity
+     * @param string $separator Separator
+     * @return string
+     */
+    protected function _getSlugStringFromEntity($entity, $separator)
+    {
+        $string = [];
+        foreach ((array)$this->getConfig('displayField') as $field) {
+            if ($entity->getError($field)) {
+                throw new InvalidArgumentException();
+            }
+            $string[] = $value = Hash::get($entity, $field);
+        }
+
+        return implode($separator, $string);
     }
 
     /**
