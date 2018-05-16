@@ -231,7 +231,7 @@ class SlugBehavior extends Behavior
     /**
      * Gets the parts from an entity
      *
-     * @param \Cake\Datasource\EntityInterface Entity
+     * @param \Cake\Datasource\EntityInterface $entity Entity
      * @return array
      */
     protected function _getPartsFromEntity($entity)
