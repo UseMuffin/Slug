@@ -34,7 +34,8 @@ class SlugBehavior extends Behavior
      *     to `Muffin\Slug\Slugger\CakeSlugger`.
      * - unique: Tells if slugs should be unique. Set this to a callable if you
      *     want to customize how unique slugs are generated. Defaults to `true`.
-     * - scope: Extra conditions used when checking a slug for uniqueness.
+     * - scope: Extra conditions or a callable `$callable($entity)` used when
+     *    checking a slug for uniqueness.
      * - implementedEvents: Events this behavior listens to.  Defaults to
      *    `['Model.buildValidator' => 'buildValidator', 'Model.beforeSave' => 'beforeSave']`.
      *    By default the behavior adds validation for the `displayField` fields
