@@ -219,7 +219,7 @@ class SlugBehavior extends Behavior
         }
 
         $parts = $this->_getPartsFromEntity($entity);
-        if (!count($parts)) {
+        if (empty($parts)) {
             return;
         }
 
@@ -230,7 +230,7 @@ class SlugBehavior extends Behavior
     /**
      * Gets the parts from an entity
      *
-     * @param \Cake\Datasource\EntityInterface
+     * @param \Cake\Datasource\EntityInterface Entity
      * @return array
      */
     protected function _getPartsFromEntity($entity)
@@ -315,7 +315,7 @@ class SlugBehavior extends Behavior
         $string = [];
         foreach ((array)$this->getConfig('displayField') as $field) {
             if ($entity->getError($field)) {
-                throw new InvalidArgumentException();
+                throw new InvalidArgumentException(sprintf('Error while generating the slug, the field `%s` contains an invalid value.', $field));
             }
             $string[] = $value = Hash::get($entity, $field);
         }
