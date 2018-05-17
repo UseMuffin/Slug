@@ -429,4 +429,15 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Behavior->slug('FOO');
         $this->assertEquals('foo', $result);
     }
+
+    public function testCallableForUnique()
+    {
+        $this->Behavior->setConfig('scope', function ($entity) {
+            return ['namespace' => $entity->namespace];
+        });
+
+        $newEntity = $this->Tags->newEntity(['namespace' => 'foo', 'name' => 'Color']);
+
+        $this->assertEquals('color', $this->Tags->slug($newEntity));
+    }
 }

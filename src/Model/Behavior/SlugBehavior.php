@@ -34,7 +34,8 @@ class SlugBehavior extends Behavior
      *     to `Muffin\Slug\Slugger\CakeSlugger`.
      * - unique: Tells if slugs should be unique. Set this to a callable if you
      *     want to customize how unique slugs are generated. Defaults to `true`.
-     * - scope: Extra conditions used when checking a slug for uniqueness.
+     * - scope: Extra conditions or a callable `$callable($entity)` used when
+     *    checking a slug for uniqueness.
      * - implementedEvents: Events this behavior listens to.  Defaults to
      *    `['Model.buildValidator' => 'buildValidator', 'Model.beforeSave' => 'beforeSave']`.
      *    By default the behavior adds validation for the `displayField` fields
@@ -218,12 +219,29 @@ class SlugBehavior extends Behavior
             return;
         }
 
+        $parts = $this->_getPartsFromEntity($entity);
+        if (empty($parts)) {
+            return;
+        }
+
+        $slug = $this->slug($entity, implode($separator, $parts), $separator);
+        $entity->set($field, $slug);
+    }
+
+    /**
+     * Gets the parts from an entity
+     *
+     * @param \Cake\Datasource\EntityInterface $entity Entity
+     * @return array
+     */
+    protected function _getPartsFromEntity($entity)
+    {
         $parts = [];
         foreach ((array)$this->getConfig('displayField') as $displayField) {
             $value = Hash::get($entity, $displayField);
 
             if ($value === null && !$entity->isNew()) {
-                return;
+                return [];
             }
 
             if (!empty($value) || is_numeric($value)) {
@@ -231,12 +249,7 @@ class SlugBehavior extends Behavior
             }
         }
 
-        if (!count($parts)) {
-            return;
-        }
-
-        $slug = $this->slug($entity, implode($separator, $parts), $separator);
-        $entity->set($field, $slug);
+        return $parts;
     }
 
     /**
@@ -278,14 +291,7 @@ class SlugBehavior extends Behavior
             $string = $entity;
             unset($entity);
         } elseif (($entity instanceof Entity) && $string === null) {
-            $string = [];
-            foreach ((array)$this->getConfig('displayField') as $field) {
-                if ($entity->getError($field)) {
-                    throw new InvalidArgumentException();
-                }
-                $string[] = $value = Hash::get($entity, $field);
-            }
-            $string = implode($separator, $string);
+            $string = $this->_getSlugStringFromEntity($entity, $separator);
         }
 
         $slug = $this->_slug($string, $separator);
@@ -296,6 +302,55 @@ class SlugBehavior extends Behavior
         }
 
         return $slug;
+    }
+
+    /**
+     * Gets the slug string based on an entity
+     *
+     * @param \Cake\Datasource\EntityInterface $entity Entity
+     * @param string $separator Separator
+     * @return string
+     */
+    protected function _getSlugStringFromEntity($entity, $separator)
+    {
+        $string = [];
+        foreach ((array)$this->getConfig('displayField') as $field) {
+            if ($entity->getError($field)) {
+                throw new InvalidArgumentException(sprintf('Error while generating the slug, the field `%s` contains an invalid value.', $field));
+            }
+            $string[] = $value = Hash::get($entity, $field);
+        }
+
+        return implode($separator, $string);
+    }
+
+    /**
+     * Builds the conditions
+     *
+     * @param \Cake\ORM\Entity $entity Entity.
+     * @param string $slug Slug
+     * @return array
+     */
+    protected function _conditions($entity, $slug)
+    {
+        /** @var string $primaryKey */
+        $primaryKey = $this->_table->getPrimaryKey();
+        $field = $this->_table->aliasField($this->getConfig('field'));
+
+        $conditions = [$field => $slug];
+
+        if (is_callable($this->getConfig('scope'))) {
+            $scope = $this->getConfig('scope');
+            $conditions += $scope($entity);
+        } else {
+            $conditions += $this->getConfig('scope');
+        }
+
+        if ($id = $entity->{$primaryKey}) {
+            $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
+        }
+
+        return $conditions;
     }
 
     /**
@@ -312,11 +367,7 @@ class SlugBehavior extends Behavior
         $primaryKey = $this->_table->getPrimaryKey();
         $field = $this->_table->aliasField($this->getConfig('field'));
 
-        $conditions = [$field => $slug];
-        $conditions += $this->getConfig('scope');
-        if ($id = $entity->{$primaryKey}) {
-            $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
-        }
+        $conditions = $this->_conditions($entity, $slug);
 
         $i = 0;
         $suffix = '';
