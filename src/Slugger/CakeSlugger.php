@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Muffin\Slug\Slugger;
 
 use Cake\Utility\Text;
@@ -9,7 +10,6 @@ use Muffin\Slug\SluggerInterface;
  */
 class CakeSlugger implements SluggerInterface
 {
-
     /**
      * Config options. You can set any valid option which Text::slug() takes
      * besides the one listed below:
@@ -20,7 +20,7 @@ class CakeSlugger implements SluggerInterface
      * @var array
      */
     public $config = [
-        'lowercase' => true
+        'lowercase' => true,
     ];
 
     /**

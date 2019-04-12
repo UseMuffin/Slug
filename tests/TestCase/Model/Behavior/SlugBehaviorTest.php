@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Muffin\Slug\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\Entity;
@@ -52,7 +53,8 @@ class SlugBehaviorTest extends TestCase
         ];
         $this->assertEquals($expected, $result);
 
-        $implementedEvents = ['foo' => 'bar'];
+        $implementedEvents = ['foo' => function () {
+        }];
         $this->Tags->removeBehavior('Slug');
         $this->Tags->addBehavior('Muffin/Slug.Slug', compact('implementedEvents'));
 
@@ -333,7 +335,7 @@ class SlugBehaviorTest extends TestCase
      */
     public function testSlugThrowsInvalidArgumentException()
     {
-        $tag = $this->Tags->newEntity();
+        $tag = $this->Tags->newEmptyEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
 

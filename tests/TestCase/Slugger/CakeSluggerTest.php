@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Muffin\Slug\Test\TestCase\Slugger;
 
 use Cake\TestSuite\TestCase;
@@ -6,7 +7,6 @@ use Muffin\Slug\Slugger\CakeSlugger;
 
 class CakeSluggerTest extends TestCase
 {
-
     public function testSlug()
     {
         $slugger = new CakeSlugger();

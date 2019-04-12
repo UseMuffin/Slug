@@ -5,11 +5,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/muffin/slug.svg?style=flat-square)](https://packagist.org/packages/muffin/slug)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-Slugging for CakePHP 3.x
-
-## Requirements
-
-- CakePHP 3.2.7+ (for lower CakePHP versions use plugin version 1.0.*)
+Slugging for CakePHP
 
 ## Installation
 
@@ -19,22 +15,10 @@ Using [Composer][composer]:
 composer require muffin/slug
 ```
 
-or if your CakePHP is less than 3.2.7 use
-
-```bash
-composer require muffin/slug:1.0.*
-```
-
-To make your application load the plugin either run:
+Load the plugin using the CLI command:
 
 ```bash
 ./bin/cake plugin load Muffin/Slug
-```
-
-or add the following line to `config/bootstrap.php`:
-
-```php
-Plugin::load('Muffin/Slug');
 ```
 
 ## Usage
@@ -42,7 +26,7 @@ To enable slugging add the behavior to your table classes in the
 `initialize()` method.
 
 ```php
-public function initialize(array $config)
+public function initialize(array $config): void
 {
     //etc
     $this->addBehavior('Muffin/Slug.Slug', [
@@ -87,7 +71,7 @@ Slug comes with the following configuration options:
   you can set `implementedEvents` to just `['Model.beforeSave' => 'beforeSave']`.
 - `onUpdate`: Boolean indicating whether slug should be updated when updating
   record, defaults to `false`.
-- `onDirty`: Boolean indicating whether slug should be updated when slug field 
+- `onDirty`: Boolean indicating whether slug should be updated when slug field
   is dirty (has a preset value custom value), defaults to `false`.
 
 ## Sluggers
@@ -122,12 +106,7 @@ You can use config array similar to the one shown above to pass options to
 their own that I can ignore when I pull)
 * Pull request - bonus point for topic branches
 
-To ensure your PRs are considered for upstream, you MUST follow the CakePHP coding standards. A `pre-commit`
-hook has been included to automatically run the code sniffs for you:
-
-```bash
-ln -s ../../contrib/pre-commit .git/hooks/.
-```
+To ensure your PRs are considered for upstream, you MUST follow the CakePHP coding standards.
 
 ## Bugs & Feedback
 
@@ -135,7 +114,7 @@ http://github.com/usemuffin/slug/issues
 
 ## License
 
-Copyright (c) 2015, [Use Muffin][muffin] and licensed under [The MIT License][mit].
+Copyright (c) 2015-Present, [Use Muffin][muffin] and licensed under [The MIT License][mit].
 
 [cakephp]:http://cakephp.org
 [composer]:http://getcomposer.org

@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 namespace Muffin\Slug\Model\Behavior;
 
 use ArrayObject;
-use Cake\Event\Event;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\EventInterface;
 use Cake\ORM\Behavior;
-use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -18,7 +19,6 @@ use Muffin\Slug\SluggerInterface;
  */
 class SlugBehavior extends Behavior
 {
-
     /**
      * Configuration.
      *
@@ -107,7 +107,7 @@ class SlugBehavior extends Behavior
      * @param array $config The configuration settings provided to this behavior.
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         if (!$this->getConfig('displayField')) {
             $this->setConfig('displayField', $this->_table->getDisplayField());
@@ -164,7 +164,7 @@ class SlugBehavior extends Behavior
      *
      * @return array
      */
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return $this->getConfig('implementedEvents');
     }
@@ -172,12 +172,12 @@ class SlugBehavior extends Behavior
     /**
      * Callback for Model.buildValidator event.
      *
-     * @param \Cake\Event\Event $event The beforeSave event that was fired.
+     * @param \Cake\Event\EventInterface $event The beforeSave event that was fired.
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @param string $name Validator name.
      * @return void
      */
-    public function buildValidator(Event $event, Validator $validator, $name)
+    public function buildValidator(EventInterface $event, Validator $validator, string $name)
     {
         foreach ((array)$this->getConfig('displayField') as $field) {
             if (strpos($field, '.') === false) {
@@ -190,12 +190,12 @@ class SlugBehavior extends Behavior
     /**
      * Callback for Model.beforeSave event.
      *
-     * @param \Cake\Event\Event $event The afterSave event that was fired.
-     * @param \Cake\ORM\Entity $entity The entity that was saved.
+     * @param \Cake\Event\EventInterface $event The afterSave event that was fired.
+     * @param \Cake\Datasource\EntityInterface $entity The entity that was saved.
      * @param \ArrayObject $options Options.
      * @return void
      */
-    public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
+    public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
         $onUpdate = $this->getConfig('onUpdate');
         if (!$entity->isNew() && !$onUpdate) {
@@ -234,7 +234,7 @@ class SlugBehavior extends Behavior
      * @param \Cake\Datasource\EntityInterface $entity Entity
      * @return array
      */
-    protected function _getPartsFromEntity($entity)
+    protected function _getPartsFromEntity(EntityInterface $entity): array
     {
         $parts = [];
         foreach ((array)$this->getConfig('displayField') as $displayField) {
@@ -273,12 +273,12 @@ class SlugBehavior extends Behavior
     /**
      * Generates slug.
      *
-     * @param \Cake\ORM\Entity|string $entity Entity to create slug for
+     * @param \Cake\Datasource\EntityInterface|string $entity Entity to create slug for
      * @param string $string String to create slug for.
      * @param string|null $separator Separator.
      * @return string Slug.
      */
-    public function slug($entity, $string = null, $separator = null)
+    public function slug($entity, ?string $string = null, ?string $separator = null)
     {
         if ($separator === null) {
             $separator = $this->getConfig('separator');
@@ -290,7 +290,7 @@ class SlugBehavior extends Behavior
             }
             $string = $entity;
             unset($entity);
-        } elseif (($entity instanceof Entity) && $string === null) {
+        } elseif (($entity instanceof EntityInterface) && $string === null) {
             $string = $this->_getSlugStringFromEntity($entity, $separator);
         }
 
@@ -311,7 +311,7 @@ class SlugBehavior extends Behavior
      * @param string $separator Separator
      * @return string
      */
-    protected function _getSlugStringFromEntity($entity, $separator)
+    protected function _getSlugStringFromEntity(EntityInterface $entity, string $separator)
     {
         $string = [];
         foreach ((array)$this->getConfig('displayField') as $field) {
@@ -327,11 +327,11 @@ class SlugBehavior extends Behavior
     /**
      * Builds the conditions
      *
-     * @param \Cake\ORM\Entity $entity Entity.
+     * @param \Cake\Datasource\EntityInterface $entity Entity.
      * @param string $slug Slug
      * @return array
      */
-    protected function _conditions($entity, $slug)
+    protected function _conditions(EntityInterface $entity, string $slug)
     {
         /** @var string $primaryKey */
         $primaryKey = $this->_table->getPrimaryKey();
@@ -356,12 +356,12 @@ class SlugBehavior extends Behavior
     /**
      * Returns a unique slug.
      *
-     * @param \Cake\ORM\Entity $entity Entity.
+     * @param \Cake\Datasource\EntityInterface $entity Entity.
      * @param string $slug Slug.
      * @param string $separator Separator.
      * @return string Unique slug.
      */
-    protected function _uniqueSlug(Entity $entity, $slug, $separator)
+    protected function _uniqueSlug(EntityInterface $entity, string $slug, string $separator)
     {
         /** @var string $primaryKey */
         $primaryKey = $this->_table->getPrimaryKey();
@@ -389,10 +389,10 @@ class SlugBehavior extends Behavior
      * Proxies the defined slugger's `slug` method.
      *
      * @param string $string String to create a slug from.
-     * @param  string $separator String to use as separator/separator.
+     * @param string $separator String to use as separator/separator.
      * @return string Slug.
      */
-    protected function _slug($string, $separator)
+    protected function _slug(string $string, string $separator)
     {
         $replacements = $this->getConfig('replacements');
         $callable = $this->slugger();

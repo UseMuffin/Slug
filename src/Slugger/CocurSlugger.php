@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Muffin\Slug\Slugger;
 
 use Cocur\Slugify\Slugify;
@@ -9,7 +10,6 @@ use Muffin\Slug\SluggerInterface;
  */
 class CocurSlugger implements SluggerInterface
 {
-
     /**
      * Config options.
      *
@@ -21,7 +21,7 @@ class CocurSlugger implements SluggerInterface
      */
     public $config = [
         'regex' => null,
-        'lowercase' => true
+        'lowercase' => true,
     ];
 
     /**
