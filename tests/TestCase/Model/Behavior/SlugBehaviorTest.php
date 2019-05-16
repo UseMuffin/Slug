@@ -15,7 +15,7 @@ class SlugBehaviorTest extends TestCase
         'plugin.Muffin/Slug.Authors',
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class SlugBehaviorTest extends TestCase
         $this->Behavior = $this->Tags->behaviors()->Slug;
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         TableRegistry::clear();
@@ -330,11 +330,10 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSlugThrowsInvalidArgumentException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $tag = $this->Tags->newEmptyEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
@@ -383,12 +382,11 @@ class SlugBehaviorTest extends TestCase
         $this->assertInstanceOf('Cake\ORM\Query', $query);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The `slug` key is required by the `slugged` finder
-     */
     public function testFinderException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The `slug` key is required by the `slugged` finder');
+
         $result = $this->Tags->find('slugged')->first();
     }
 
