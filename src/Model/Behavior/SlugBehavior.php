@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace Muffin\Slug\Model\Behavior;
 
 use ArrayObject;
@@ -316,7 +317,10 @@ class SlugBehavior extends Behavior
         $string = [];
         foreach ((array)$this->getConfig('displayField') as $field) {
             if ($entity->getError($field)) {
-                throw new InvalidArgumentException(sprintf('Error while generating the slug, the field `%s` contains an invalid value.', $field));
+                throw new InvalidArgumentException(sprintf(
+                    'Error while generating the slug, the field `%s` contains an invalid value.',
+                    $field
+                ));
             }
             $string[] = $value = Hash::get($entity, $field);
         }
@@ -346,7 +350,8 @@ class SlugBehavior extends Behavior
             $conditions += $this->getConfig('scope');
         }
 
-        if ($id = $entity->{$primaryKey}) {
+        $id = $entity->get($primaryKey);
+        if ($id !== null) {
             $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
         }
 

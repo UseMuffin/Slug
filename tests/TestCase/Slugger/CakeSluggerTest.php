@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace Muffin\Slug\Test\TestCase\Slugger;
 
 use Cake\TestSuite\TestCase;
