@@ -211,7 +211,8 @@ class SlugBehavior extends Behavior
 
         $onDirty = $this->getConfig('onDirty');
         $field = $this->getConfig('field');
-        if (!$onDirty
+        if (
+            !$onDirty
             && $entity->isDirty($field)
             && (!$entity->isNew() || (!empty($entity->{$field})))
         ) {
