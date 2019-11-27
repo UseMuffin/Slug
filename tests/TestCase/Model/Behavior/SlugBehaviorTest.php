@@ -421,16 +421,6 @@ class SlugBehaviorTest extends TestCase
         $this->assertFalse($this->Behavior->slugger()->config['lowercase']);
     }
 
-    public function testCallableForSlugger()
-    {
-        $this->Behavior->setConfig('slugger', function ($string, $separator) {
-            return strtolower($string);
-        });
-
-        $result = $this->Behavior->slug('FOO');
-        $this->assertEquals('foo', $result);
-    }
-
     public function testCallableForUnique()
     {
         $this->Behavior->setConfig('scope', function ($entity) {

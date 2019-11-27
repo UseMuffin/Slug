@@ -33,8 +33,9 @@ class SlugBehavior extends Behavior
      *     generating the slug.
      * - maxLength: Maximum length of a slug. Defaults to the field's limit as
      *     defined in the schema (when possible). Otherwise, no limit.
-     * - slugger: Class that implements the `Muffin\Slug\SlugInterface`. Defaults
-     *     to `Muffin\Slug\Slugger\CakeSlugger`.
+     * - slugger: Class that implements the `Muffin\Slug\SlugInterface`.
+     *     Can either be a class name or instance. Defaults to
+     *     `Muffin\Slug\Slugger\CakeSlugger`.
      * - unique: Tells if slugs should be unique. Set this to a Closure if you
      *     want to customize how unique slugs are generated. Defaults to `true`.
      * - scope: Extra conditions or a Closure used when
@@ -83,9 +84,9 @@ class SlugBehavior extends Behavior
     ];
 
     /**
-     * Slugger instance or Closure
+     * Slugger instance or class name.
      *
-     * @var \Muffin\Slug\SluggerInterface|\Closure
+     * @var \Muffin\Slug\SluggerInterface|string
      */
     protected $_slugger;
 
@@ -132,11 +133,12 @@ class SlugBehavior extends Behavior
     /**
      * Get/set slugger instance.
      *
-     * @param \Muffin\Slug\SluggerInterface|\Closure $slugger Sets slugger instance if passed.
+     * @param \Muffin\Slug\SluggerInterface|string $slugger Sets slugger instance if passed.
      *   If no argument is passed return slugger intance based on behavior config.
-     * @return \Closure|\Muffin\Slug\SluggerInterface|null
+     * @return \Muffin\Slug\SluggerInterface|null
+     * @psalm-suppress InvalidReturnStatement
      */
-    public function slugger($slugger = null)
+    public function slugger($slugger = null): ?SluggerInterface
     {
         if ($slugger !== null) {
             $this->_slugger = $slugger;
@@ -156,10 +158,11 @@ class SlugBehavior extends Behavior
              * @psalm-suppress InvalidStringClass
              */
             $this->_slugger = new $slugger();
-        } elseif (is_array($slugger) && isset($slugger['className'])) {
-            /** @psalm-suppress PropertyTypeCoercion */
-            $this->_slugger = new $slugger['className']();
+        } elseif (is_array($slugger)) {
+            $className = $slugger['className'];
             unset($slugger['className']);
+            /** @psalm-suppress PropertyTypeCoercion */
+            $this->_slugger = new $className();
             $this->_slugger->config = $slugger + $this->_slugger->config;
         } else {
             $this->_slugger = $slugger;
@@ -408,11 +411,8 @@ class SlugBehavior extends Behavior
     {
         $replacements = $this->getConfig('replacements');
         $slugger = $this->slugger();
-        if ($slugger instanceof SluggerInterface) {
-            $slugger = [$slugger, 'slug'];
-        }
-        /** @psalm-suppress PossiblyNullFunctionCall */
-        $slug = $slugger(str_replace(array_keys($replacements), $replacements, $string), $separator);
+        /** @psalm-suppress PossiblyNullReference */
+        $slug = $slugger->slug(str_replace(array_keys($replacements), $replacements, $string), $separator);
         if (!empty($this->getConfig('maxLength'))) {
             $slug = Text::truncate(
                 $slug,
