@@ -31,7 +31,7 @@ class CakeSlugger implements SluggerInterface
      * @param string $replacement Replacement string.
      * @return string Sluggified string.
      */
-    public function slug($string, $replacement = '-')
+    public function slug(string $string, string $replacement = '-'): string
     {
         $config = $this->config;
         $config['replacement'] = $replacement;

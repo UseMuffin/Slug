@@ -15,5 +15,5 @@ interface SluggerInterface
      * @param string $separator Separator.
      * @return string
      */
-    public function slug($string, $separator = '-');
+    public function slug(string $string, string $separator = '-'): string;
 }

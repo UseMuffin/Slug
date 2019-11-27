@@ -260,7 +260,7 @@ class SlugBehavior extends Behavior
      * @param array $options Options.
      * @return \Cake\ORM\Query Query.
      */
-    public function findSlugged(Query $query, array $options)
+    public function findSlugged(Query $query, array $options): Query
     {
         if (!isset($options['slug'])) {
             throw new InvalidArgumentException('The `slug` key is required by the `slugged` finder.');
@@ -279,7 +279,7 @@ class SlugBehavior extends Behavior
      * @param string|null $separator Separator.
      * @return string Slug.
      */
-    public function slug($entity, ?string $string = null, ?string $separator = null)
+    public function slug($entity, ?string $string = null, ?string $separator = null): string
     {
         if ($separator === null) {
             $separator = $this->getConfig('separator');
@@ -312,7 +312,7 @@ class SlugBehavior extends Behavior
      * @param string $separator Separator
      * @return string
      */
-    protected function _getSlugStringFromEntity(EntityInterface $entity, string $separator)
+    protected function _getSlugStringFromEntity(EntityInterface $entity, string $separator): string
     {
         $string = [];
         foreach ((array)$this->getConfig('displayField') as $field) {
@@ -335,7 +335,7 @@ class SlugBehavior extends Behavior
      * @param string $slug Slug
      * @return array
      */
-    protected function _conditions(EntityInterface $entity, string $slug)
+    protected function _conditions(EntityInterface $entity, string $slug): array
     {
         /** @var string $primaryKey */
         $primaryKey = $this->_table->getPrimaryKey();
@@ -366,7 +366,7 @@ class SlugBehavior extends Behavior
      * @param string $separator Separator.
      * @return string Unique slug.
      */
-    protected function _uniqueSlug(EntityInterface $entity, string $slug, string $separator)
+    protected function _uniqueSlug(EntityInterface $entity, string $slug, string $separator): string
     {
         /** @var string $primaryKey */
         $primaryKey = $this->_table->getPrimaryKey();
@@ -397,7 +397,7 @@ class SlugBehavior extends Behavior
      * @param string $separator String to use as separator/separator.
      * @return string Slug.
      */
-    protected function _slug(string $string, string $separator)
+    protected function _slug(string $string, string $separator): string
     {
         $replacements = $this->getConfig('replacements');
         $callable = $this->slugger();
