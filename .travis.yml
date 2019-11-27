@@ -47,7 +47,7 @@ script:
 
   - if [[ $PHPCS = 1 ]]; then vendor/bin/phpcs -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests; fi
 
-  - if [[ $STATIC_ANALYSIS = 1 ]]; then composer require --dev vimeo/psalm && vendor/bin/psalm src; fi
+  - if [[ $STATIC_ANALYSIS = 1 ]]; then composer require --dev psalm/phar && vendor/bin/psalm.phar --show-info=false; fi
 
 after_success:
   - |

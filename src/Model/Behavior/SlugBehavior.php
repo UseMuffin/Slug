@@ -115,6 +115,7 @@ class SlugBehavior extends Behavior
         }
 
         if ($this->getConfig('maxLength') === null) {
+            /** @psalm-suppress PossiblyNullArrayAccess */
             $this->setConfig(
                 'maxLength',
                 $this->_table->getSchema()->getColumn($this->getConfig('field'))['length']
@@ -148,8 +149,13 @@ class SlugBehavior extends Behavior
         $slugger = $this->getConfig('slugger');
 
         if (is_string($slugger)) {
+            /**
+             * @psalm-suppress PropertyTypeCoercion
+             * @psalm-suppress InvalidStringClass
+             */
             $this->_slugger = new $slugger();
         } elseif (is_array($slugger) && isset($slugger['className'])) {
+            /** @psalm-suppress PropertyTypeCoercion */
             $this->_slugger = new $slugger['className']();
             unset($slugger['className']);
             $this->_slugger->config = $slugger + $this->_slugger->config;
@@ -295,6 +301,7 @@ class SlugBehavior extends Behavior
             $string = $this->_getSlugStringFromEntity($entity, $separator);
         }
 
+        /** @psalm-suppress PossiblyNullArgument */
         $slug = $this->_slug($string, $separator);
 
         $unique = $this->getConfig('unique');
@@ -404,6 +411,7 @@ class SlugBehavior extends Behavior
         if ($slugger instanceof SluggerInterface) {
             $slugger = [$slugger, 'slug'];
         }
+        /** @psalm-suppress PossiblyNullFunctionCall */
         $slug = $slugger(str_replace(array_keys($replacements), $replacements, $string), $separator);
         if (!empty($this->getConfig('maxLength'))) {
             $slug = Text::truncate(
