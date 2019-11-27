@@ -86,7 +86,7 @@ the `$options` arguments of `Text::slug()`.
 
 ```php
 'slugger' => [
-    'className' => 'Muffin\Slug\Slugger\CakeSlugger',
+    'className' => \Muffin\Slug\Slugger\CakeSlugger::class,
     'transliteratorId' => '<A valid ICU Transliterator ID here>'
 ]
 ```
