@@ -378,10 +378,7 @@ class SlugBehavior extends Behavior
      */
     protected function _uniqueSlug(EntityInterface $entity, string $slug, string $separator): string
     {
-        /** @var string $primaryKey */
-        $primaryKey = $this->_table->getPrimaryKey();
         $field = $this->_table->aliasField($this->getConfig('field'));
-
         $conditions = $this->_conditions($entity, $slug);
 
         $i = 0;
