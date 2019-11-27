@@ -12,7 +12,9 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
+use Closure;
 use InvalidArgumentException;
+use Muffin\Slug\Slugger\CakeSlugger;
 use Muffin\Slug\SluggerInterface;
 
 /**
@@ -63,7 +65,7 @@ class SlugBehavior extends Behavior
             "'" => '',
         ],
         'maxLength' => null,
-        'slugger' => 'Muffin\Slug\Slugger\CakeSlugger',
+        'slugger' => CakeSlugger::class,
         'unique' => true,
         'scope' => [],
         'implementedEvents' => [
@@ -123,7 +125,7 @@ class SlugBehavior extends Behavior
         }
 
         if ($this->getConfig('unique') === true) {
-            $this->setConfig('unique', [$this, '_uniqueSlug']);
+            $this->setConfig('unique', Closure::fromCallable([$this, '_uniqueSlug']));
         }
     }
 
