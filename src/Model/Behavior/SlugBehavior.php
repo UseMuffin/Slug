@@ -183,7 +183,7 @@ class SlugBehavior extends Behavior
         foreach ((array)$this->getConfig('displayField') as $field) {
             if (strpos($field, '.') === false) {
                 $validator->requirePresence($field, 'create')
-                    ->notEmpty($field);
+                    ->notEmptyString($field);
             }
         }
     }
