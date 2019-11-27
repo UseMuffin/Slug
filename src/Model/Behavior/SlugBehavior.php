@@ -150,7 +150,7 @@ class SlugBehavior extends Behavior
      * @param \Muffin\Slug\SluggerInterface|string|array $slugger Sets slugger instance.
      *   Can be SluggerInterface instance or class name or config array.
      * @return void
-     *  @psalm-var \Muffin\Slug\SluggerInterface|class-string|array $slugger
+     * @psalm-var \Muffin\Slug\SluggerInterface|class-string|array $slugger
      */
     public function setSlugger($slugger): void
     {
