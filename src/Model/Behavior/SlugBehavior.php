@@ -332,7 +332,7 @@ class SlugBehavior extends Behavior
                     $field
                 ));
             }
-            $string[] = $value = Hash::get($entity, $field);
+            $string[] = Hash::get($entity, $field);
         }
 
         return implode($separator, $string);
