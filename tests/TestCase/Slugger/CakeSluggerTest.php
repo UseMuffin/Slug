@@ -14,7 +14,7 @@ class CakeSluggerTest extends TestCase
 
         $this->assertEquals('hello-world', $slugger->slug('Hello World!'));
 
-        $slugger->config['lowercase'] = false;
+        $slugger = new CakeSlugger(['lowercase' => false]);
         $this->assertEquals('Hello-World', $slugger->slug('Hello World!'));
     }
 }

@@ -84,9 +84,9 @@ class SlugBehavior extends Behavior
     ];
 
     /**
-     * Slugger instance or class name.
+     * Slugger instance.
      *
-     * @var \Muffin\Slug\SluggerInterface|string
+     * @var \Muffin\Slug\SluggerInterface
      */
     protected $_slugger;
 
@@ -131,44 +131,60 @@ class SlugBehavior extends Behavior
     }
 
     /**
-     * Get/set slugger instance.
+     * Get slugger instance.
      *
-     * @param \Muffin\Slug\SluggerInterface|string $slugger Sets slugger instance if passed.
-     *   If no argument is passed return slugger intance based on behavior config.
-     * @return \Muffin\Slug\SluggerInterface|null
-     * @psalm-suppress InvalidReturnStatement
+     * @return \Muffin\Slug\SluggerInterface
      */
-    public function slugger($slugger = null): ?SluggerInterface
+    public function getSlugger(): SluggerInterface
     {
-        if ($slugger !== null) {
-            $this->_slugger = $slugger;
-
-            return null;
-        }
-
-        if ($this->_slugger !== null) {
+        if ($this->_slugger instanceof SluggerInterface) {
             return $this->_slugger;
         }
 
-        $slugger = $this->getConfig('slugger');
+        return $this->_slugger = $this->_createSlugger($this->getConfig('slugger'));
+    }
 
+    /**
+     * Set slugger instance.
+     *
+     * @param \Muffin\Slug\SluggerInterface|string|array $slugger Sets slugger instance.
+     *   Can be SluggerInterface instance or class name or config array.
+     * @return void
+     *  @psalm-var \Muffin\Slug\SluggerInterface|class-string|array $slugger
+     */
+    public function setSlugger($slugger): void
+    {
+        $this->_slugger = $this->_createSlugger($slugger);
+    }
+
+    /**
+     * Create slugger instance
+     *
+     * @param \Muffin\Slug\SluggerInterface|string|array $slugger Sets slugger instance.
+     *   Can be SluggerInterface instance or class name or config array.
+     * @return \Muffin\Slug\SluggerInterface
+     * @psalm-var \Muffin\Slug\SluggerInterface|class-string|array $slugger
+     * @psalm-suppress MoreSpecificReturnType
+     */
+    protected function _createSlugger($slugger): SluggerInterface
+    {
         if (is_string($slugger)) {
             /**
-             * @psalm-suppress PropertyTypeCoercion
+             * @psalm-suppress LessSpecificReturnStatement
              * @psalm-suppress InvalidStringClass
              */
-            $this->_slugger = new $slugger();
-        } elseif (is_array($slugger)) {
-            $className = $slugger['className'];
-            unset($slugger['className']);
-            /** @psalm-suppress PropertyTypeCoercion */
-            $this->_slugger = new $className();
-            $this->_slugger->config = $slugger + $this->_slugger->config;
-        } else {
-            $this->_slugger = $slugger;
+            return new $slugger();
         }
 
-        return $this->_slugger;
+        if (is_array($slugger)) {
+            $className = $slugger['className'];
+            unset($slugger['className']);
+            /** @psalm-suppress LessSpecificReturnStatement */
+            return new $className($slugger);
+        }
+
+        /** @var \Muffin\Slug\SluggerInterface */
+        return $slugger;
     }
 
     /**
@@ -410,7 +426,7 @@ class SlugBehavior extends Behavior
     protected function _slug(string $string, string $separator): string
     {
         $replacements = $this->getConfig('replacements');
-        $slugger = $this->slugger();
+        $slugger = $this->getSlugger();
         /** @psalm-suppress PossiblyNullReference */
         $slug = $slugger->slug(str_replace(array_keys($replacements), $replacements, $string), $separator);
         if (!empty($this->getConfig('maxLength'))) {

@@ -418,7 +418,7 @@ class SlugBehaviorTest extends TestCase
             'lowercase' => false,
         ]);
 
-        $this->assertFalse($this->Behavior->slugger()->config['lowercase']);
+        $this->assertSame('FOO-BAR', $this->Behavior->getSlugger()->slug('FOO BAR'));
     }
 
     public function testCallableForUnique()

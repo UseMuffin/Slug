@@ -20,10 +20,20 @@ class CocurSlugger implements SluggerInterface
      *
      * @var array
      */
-    public $config = [
+    protected $config = [
         'regex' => null,
         'lowercase' => true,
     ];
+
+    /**
+     * Constructor
+     *
+     * @param array $config Configuration.
+     */
+    public function __construct(array $config = [])
+    {
+        $this->config = $config + $this->config;
+    }
 
     /**
      * Generate slug.
