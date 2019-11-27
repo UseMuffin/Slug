@@ -33,9 +33,9 @@ class SlugBehavior extends Behavior
      *     defined in the schema (when possible). Otherwise, no limit.
      * - slugger: Class that implements the `Muffin\Slug\SlugInterface`. Defaults
      *     to `Muffin\Slug\Slugger\CakeSlugger`.
-     * - unique: Tells if slugs should be unique. Set this to a callable if you
+     * - unique: Tells if slugs should be unique. Set this to a Closure if you
      *     want to customize how unique slugs are generated. Defaults to `true`.
-     * - scope: Extra conditions or a callable `$callable($entity)` used when
+     * - scope: Extra conditions or a Closure used when
      *    checking a slug for uniqueness.
      * - implementedEvents: Events this behavior listens to.  Defaults to
      *    `['Model.buildValidator' => 'buildValidator', 'Model.beforeSave' => 'beforeSave']`.
@@ -81,9 +81,9 @@ class SlugBehavior extends Behavior
     ];
 
     /**
-     * Slugger instance or callable
+     * Slugger instance or Closure
      *
-     * @var \Muffin\Slug\SluggerInterface|callable
+     * @var \Muffin\Slug\SluggerInterface|\Closure
      */
     protected $_slugger;
 
@@ -129,9 +129,9 @@ class SlugBehavior extends Behavior
     /**
      * Get/set slugger instance.
      *
-     * @param \Muffin\Slug\SluggerInterface|callable $slugger Sets slugger instance if passed.
+     * @param \Muffin\Slug\SluggerInterface|\Closure $slugger Sets slugger instance if passed.
      *   If no argument is passed return slugger intance based on behavior config.
-     * @return callable|\Muffin\Slug\SluggerInterface|null
+     * @return \Closure|\Muffin\Slug\SluggerInterface|null
      */
     public function slugger($slugger = null)
     {
@@ -343,11 +343,11 @@ class SlugBehavior extends Behavior
 
         $conditions = [$field => $slug];
 
-        if (is_callable($this->getConfig('scope'))) {
-            $scope = $this->getConfig('scope');
-            $conditions += $scope($entity);
+        $scope = $this->getConfig('scope');
+        if (is_array($scope)) {
+            $conditions += $scope;
         } else {
-            $conditions += $this->getConfig('scope');
+            $conditions += $scope($entity);
         }
 
         $id = $entity->get($primaryKey);
@@ -400,11 +400,11 @@ class SlugBehavior extends Behavior
     protected function _slug(string $string, string $separator): string
     {
         $replacements = $this->getConfig('replacements');
-        $callable = $this->slugger();
-        if (is_object($callable) && $callable instanceof SluggerInterface) {
-            $callable = [$callable, 'slug'];
+        $slugger = $this->slugger();
+        if ($slugger instanceof SluggerInterface) {
+            $slugger = [$slugger, 'slug'];
         }
-        $slug = $callable(str_replace(array_keys($replacements), $replacements, $string), $separator);
+        $slug = $slugger(str_replace(array_keys($replacements), $replacements, $string), $separator);
         if (!empty($this->getConfig('maxLength'))) {
             $slug = Text::truncate(
                 $slug,
