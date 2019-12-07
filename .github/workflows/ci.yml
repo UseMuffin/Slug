@@ -1,0 +1,101 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  testsuite:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.3', '7.4']
+        db-type: [sqlite, mysql, pgsql]
+    name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }}
+
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432/tcp
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: ${{ matrix.php-version }}
+        extension-csv: mbstring, intl, pdo_${{ matrix.db-type }}
+        coverage: pcov
+        pecl: false
+
+    - name: Composer Install
+      run: composer install
+
+    - name: Run PHPUnit
+      run: |
+        if [ ${{ matrix.db-type }} == 'mysql' ]; then mysql -u root -proot -e 'CREATE DATABASE cakephp_test;'; fi
+
+        if [[ ${{ matrix.db-type }} == 'sqlite' ]]; then export DB_DSN='sqlite:///:memory:'; fi
+        if [[ ${{ matrix.db-type }} == 'mysql' ]]; then export DB_DSN='mysql://root:root@127.0.0.1/cakephp_test?init[]=SET sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"'; fi
+        if [[ ${{ matrix.db-type }} == 'pgsql' ]]; then export DB_DSN='postgres://postgres@127.0.0.1:${{ job.services.postgres.ports['5432'] }}/postgres'; fi
+
+        if [[ ${{ matrix.php-version }} == '7.2' && ${{ matrix.db-type }} == 'sqlite' ]]; then
+          vendor/bin/phpunit --coverage-clover=coverage.xml
+        else
+          vendor/bin/phpunit
+        fi
+
+    - name: Code Coverage Report
+      if: matrix.php-version == '7.2' && matrix.db-type == 'sqlite'
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: bash <(curl -s https://codecov.io/bash)
+
+  coding-standard:
+    name: Coding Standard
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: '7.2'
+        extension-csv: mbstring, intl
+        coverage: none
+        pecl: false
+
+    - name: Composer Install
+      run: composer require --dev cakephp/cakephp-codesniffer:dev-next
+
+    - name: Run PHP CodeSniffer
+      run: vendor/bin/phpcs --standard=vendor/cakephp/cakephp-codesniffer/CakePHP -p src/ tests/
+
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: '7.2'
+        extension-csv: mbstring, intl
+        coverage: none
+        pecl: false
+
+    - name: Composer Install
+      run: composer require --dev psalm/phar:^3.7
+
+    - name: Run psalm
+      run: vendor/bin/psalm.phar --show-info=false
