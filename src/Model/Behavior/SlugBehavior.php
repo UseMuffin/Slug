@@ -12,6 +12,7 @@ use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
 use Muffin\Slug\SluggerInterface;
+use RuntimeException;
 
 /**
  * Slug behavior.
@@ -113,10 +114,30 @@ class SlugBehavior extends Behavior
             $this->setConfig('displayField', $this->_table->getDisplayField());
         }
 
+        $field = $this->getConfig('field');
+
+        if (!$this->getTable()->hasField($field)) {
+            throw new RuntimeException(sprintf(
+                'SlugBehavior: Table `%s` is missing field `%s`',
+                $this->getTable()->getTable(),
+                $field
+            ));
+        }
+
+        $fieldSchema = $this->_table->getSchema()->getColumn($field);
+
         if ($this->getConfig('maxLength') === null) {
+            if ($fieldSchema['length'] === null) {
+                throw new RuntimeException(sprintf(
+                    'SlugBehavior: The schema for field `%s.%s` has no length defined',
+                    $this->getTable()->getTable(),
+                    $field
+                ));
+            }
+
             $this->setConfig(
                 'maxLength',
-                $this->_table->getSchema()->getColumn($this->getConfig('field'))['length']
+                $fieldSchema['length']
             );
         }
 

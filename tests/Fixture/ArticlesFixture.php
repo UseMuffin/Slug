@@ -16,8 +16,8 @@ class ArticlesFixture extends TestFixture
         'id' => ['type' => 'integer'],
         'author_id' => ['type' => 'integer'],
         'title' => ['type' => 'string', 'null' => false],
-        'sub_title' => ['type' => 'string', 'null' => false],
-        'slug' => ['type' => 'string', 'null' => false],
+        'sub_title' => ['type' => 'string', 'null' => false, 'length' => 255],
+        'slug' => ['type' => 'string', 'null' => false, 'length' => 255],
         'created' => ['type' => 'datetime', 'null' => true],
         'modified' => ['type' => 'datetime', 'null' => true],
         '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
