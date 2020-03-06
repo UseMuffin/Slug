@@ -12,6 +12,7 @@ class SlugBehaviorTest extends TestCase
         'plugin.Muffin/Slug.Articles',
         'plugin.Muffin/Slug.ArticlesTags',
         'plugin.Muffin/Slug.Authors',
+        'plugin.Muffin/Slug.Recipes',
     ];
 
     public function setUp()
@@ -439,5 +440,21 @@ class SlugBehaviorTest extends TestCase
         $newEntity = $this->Tags->newEntity(['namespace' => 'foo', 'name' => 'Color']);
 
         $this->assertEquals('color', $this->Tags->slug($newEntity));
+    }
+
+    public function testSlugMissingFieldLengthThrowsException()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('SlugBehavior: The schema for field `slug_recipes.slug` has no length defined');
+        $table = TableRegistry::get('Muffin/Slug.Recipes', ['table' => 'slug_recipes']);
+        $table->addBehavior('Muffin/Slug.Slug');
+    }
+
+    public function testSlugMissingFieldThrowsException()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('SlugBehavior: Table `slug_recipes` is missing field `real_slug`');
+        $table = TableRegistry::get('Muffin/Slug.Recipes', ['table' => 'slug_recipes']);
+        $table->addBehavior('Muffin/Slug.Slug', ['field' => 'real_slug']);
     }
 }
