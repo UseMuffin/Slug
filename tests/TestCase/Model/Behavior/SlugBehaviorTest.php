@@ -444,9 +444,13 @@ class SlugBehaviorTest extends TestCase
 
     public function testSlugMissingFieldLengthThrowsException()
     {
+        $table = TableRegistry::get('Muffin/Slug.Recipes', ['table' => 'slug_recipes']);
+
+        $this->skipIf(get_class($table->getConnection()->getDriver()) !== 'postgres');
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('SlugBehavior: The schema for field `slug_recipes.slug` has no length defined');
-        $table = TableRegistry::get('Muffin/Slug.Recipes', ['table' => 'slug_recipes']);
+
         $table->addBehavior('Muffin/Slug.Slug');
     }
 
