@@ -20,7 +20,7 @@ class ArticlesFixture extends TestFixture
         'slug' => ['type' => 'string', 'null' => false, 'length' => 255],
         'created' => ['type' => 'datetime', 'null' => true],
         'modified' => ['type' => 'datetime', 'null' => true],
-        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
+        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]],
     ];
 
     /**

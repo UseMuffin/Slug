@@ -20,7 +20,7 @@ class CakeSlugger implements SluggerInterface
      * @var array
      */
     public $config = [
-        'lowercase' => true
+        'lowercase' => true,
     ];
 
     /**

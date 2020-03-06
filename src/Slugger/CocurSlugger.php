@@ -21,7 +21,7 @@ class CocurSlugger implements SluggerInterface
      */
     public $config = [
         'regex' => null,
-        'lowercase' => true
+        'lowercase' => true,
     ];
 
     /**
