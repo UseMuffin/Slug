@@ -35,6 +35,8 @@ class SlugBehavior extends Behavior
      *     to `Muffin\Slug\Slugger\CakeSlugger`.
      * - unique: Tells if slugs should be unique. Set this to a callable if you
      *     want to customize how unique slugs are generated. Defaults to `true`.
+     * - virtual: Tells if slugs are a virtual property of the entity or not to skip
+     *     validating the column's existence and length.
      * - scope: Extra conditions or a callable `$callable($entity)` used when
      *    checking a slug for uniqueness.
      * - implementedEvents: Events this behavior listens to.  Defaults to
@@ -65,6 +67,7 @@ class SlugBehavior extends Behavior
         'maxLength' => null,
         'slugger' => 'Muffin\Slug\Slugger\CakeSlugger',
         'unique' => true,
+        'virtual' => false,
         'scope' => [],
         'implementedEvents' => [
             'Model.buildValidator' => 'buildValidator',
@@ -114,6 +117,14 @@ class SlugBehavior extends Behavior
             $this->setConfig('displayField', $this->_table->getDisplayField());
         }
 
+        if ($this->getConfig('unique') === true) {
+            $this->setConfig('unique', [$this, '_uniqueSlug']);
+        }
+
+        if ($this->getConfig('virtual')) {
+            return;
+        }
+
         $field = $this->getConfig('field');
 
         if (!$this->getTable()->hasField($field)) {
@@ -139,10 +150,6 @@ class SlugBehavior extends Behavior
                 'maxLength',
                 $fieldSchema['length']
             );
-        }
-
-        if ($this->getConfig('unique') === true) {
-            $this->setConfig('unique', [$this, '_uniqueSlug']);
         }
     }
 

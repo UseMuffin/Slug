@@ -457,4 +457,11 @@ class SlugBehaviorTest extends TestCase
         $table = TableRegistry::get('Muffin/Slug.Recipes', ['table' => 'slug_recipes']);
         $table->addBehavior('Muffin/Slug.Slug', ['field' => 'real_slug']);
     }
+
+    public function testVirtualSlugDoesNotThrowExceptions()
+    {
+        $table = TableRegistry::get('Muffin/Slug.Recipes', ['table' => 'slug_recipes']);
+        $table->addBehavior('Muffin/Slug.Slug', ['field' => 'real_slug', 'virtual' => true]);
+        $this->assertTrue($table->hasBehavior('Slug'));
+    }
 }
