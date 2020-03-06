@@ -15,7 +15,7 @@ class AuthorsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'integer'],
         'name' => ['type' => 'string', 'null' => false],
-        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
+        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]],
     ];
 
     /**

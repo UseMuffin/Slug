@@ -11,7 +11,7 @@ class ArticlesTagsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'integer'],
         'article_id' => ['type' => 'integer'],
-        'slug_tag_id' => ['type' => 'integer']
+        'slug_tag_id' => ['type' => 'integer'],
     ];
 
     public $records = [
