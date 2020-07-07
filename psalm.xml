@@ -14,10 +14,6 @@
     </projectFiles>
 
     <issueHandlers>
-        <InternalMethod errorLevel="info" />
-        <InternalProperty errorLevel="info" />
-        <InternalClass errorLevel="info" />
-
         <MissingClosureReturnType errorLevel="info" />
 
         <PropertyNotSetInConstructor errorLevel="info" />
