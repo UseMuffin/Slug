@@ -381,6 +381,7 @@ class SlugBehavior extends Behavior
 
         $id = $entity->get($primaryKey);
         if ($id !== null) {
+            /** @psalm-suppress PossiblyInvalidArrayOffset */
             $conditions['NOT'][$this->_table->aliasField($primaryKey)] = $id;
         }
 
