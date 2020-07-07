@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Muffin\Slug\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\Entity;
@@ -14,7 +16,7 @@ class SlugBehaviorTest extends TestCase
         'plugin.Muffin/Slug.Authors',
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -25,7 +27,7 @@ class SlugBehaviorTest extends TestCase
         $this->Behavior = $this->Tags->behaviors()->Slug;
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         TableRegistry::clear();
@@ -52,7 +54,8 @@ class SlugBehaviorTest extends TestCase
         ];
         $this->assertEquals($expected, $result);
 
-        $implementedEvents = ['foo' => 'bar'];
+        $implementedEvents = ['foo' => function () {
+        }];
         $this->Tags->removeBehavior('Slug');
         $this->Tags->addBehavior('Muffin/Slug.Slug', compact('implementedEvents'));
 
@@ -328,12 +331,11 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSlugThrowsInvalidArgumentException()
     {
-        $tag = $this->Tags->newEntity();
+        $this->expectException(\InvalidArgumentException::class);
+
+        $tag = $this->Tags->newEmptyEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
 
@@ -381,12 +383,11 @@ class SlugBehaviorTest extends TestCase
         $this->assertInstanceOf('Cake\ORM\Query', $query);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The `slug` key is required by the `slugged` finder
-     */
     public function testFinderException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The `slug` key is required by the `slugged` finder');
+
         $result = $this->Tags->find('slugged')->first();
     }
 
@@ -417,17 +418,7 @@ class SlugBehaviorTest extends TestCase
             'lowercase' => false,
         ]);
 
-        $this->assertFalse($this->Behavior->slugger()->config['lowercase']);
-    }
-
-    public function testCallableForSlugger()
-    {
-        $this->Behavior->setConfig('slugger', function ($string, $separator) {
-            return strtolower($string);
-        });
-
-        $result = $this->Behavior->slug('FOO');
-        $this->assertEquals('foo', $result);
+        $this->assertSame('FOO-BAR', $this->Behavior->getSlugger()->slug('FOO BAR'));
     }
 
     public function testCallableForUnique()

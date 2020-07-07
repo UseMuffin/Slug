@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Muffin\Slug;
 
 /**
@@ -13,5 +15,5 @@ interface SluggerInterface
      * @param string $separator Separator.
      * @return string
      */
-    public function slug($string, $separator = '-');
+    public function slug(string $string, string $separator = '-'): string;
 }

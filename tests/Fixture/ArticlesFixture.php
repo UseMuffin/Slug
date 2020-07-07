@@ -20,7 +20,7 @@ class ArticlesFixture extends TestFixture
         'slug' => ['type' => 'string', 'null' => false],
         'created' => ['type' => 'datetime', 'null' => true],
         'modified' => ['type' => 'datetime', 'null' => true],
-        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
+        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]],
     ];
 
     /**
@@ -34,12 +34,13 @@ class ArticlesFixture extends TestFixture
         ['author_id' => 1, 'title' => 'Third Article', 'sub_title' => 'subtitle 3', 'slug' => 'third-title'],
     ];
 
-    public function init()
+    public function init(): void
     {
         $created = $modified = date('Y-m-d H:i:s');
         array_walk($this->records, function (&$record) use ($created, $modified) {
             $record += compact('created', 'modified');
         });
+
         parent::init();
     }
 }

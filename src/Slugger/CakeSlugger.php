@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Muffin\Slug\Slugger;
 
 use Cake\Utility\Text;
@@ -9,7 +11,6 @@ use Muffin\Slug\SluggerInterface;
  */
 class CakeSlugger implements SluggerInterface
 {
-
     /**
      * Config options. You can set any valid option which Text::slug() takes
      * besides the one listed below:
@@ -19,9 +20,19 @@ class CakeSlugger implements SluggerInterface
      *
      * @var array
      */
-    public $config = [
-        'lowercase' => true
+    protected $config = [
+        'lowercase' => true,
     ];
+
+    /**
+     * Constructor
+     *
+     * @param array $config Configuration.
+     */
+    public function __construct(array $config = [])
+    {
+        $this->config = $config + $this->config;
+    }
 
     /**
      * Generate slug.
@@ -30,7 +41,7 @@ class CakeSlugger implements SluggerInterface
      * @param string $replacement Replacement string.
      * @return string Sluggified string.
      */
-    public function slug($string, $replacement = '-')
+    public function slug(string $string, string $replacement = '-'): string
     {
         $config = $this->config;
         $config['replacement'] = $replacement;
