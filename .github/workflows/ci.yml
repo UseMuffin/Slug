@@ -16,7 +16,9 @@ jobs:
       postgres:
         image: postgres
         ports:
-          - 5432/tcp
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
 
     steps:
     - uses: actions/checkout@v1
@@ -36,7 +38,7 @@ jobs:
 
     - name: Run PHPUnit
       run: |
-        if [ ${{ matrix.db-type }} == 'mysql' ]; then mysql -u root -proot -e 'CREATE DATABASE cakephp_test;'; fi
+        if [ ${{ matrix.db-type }} == 'mysql' ]; then mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE cakephp;'; fi
 
         if [[ ${{ matrix.db-type }} == 'sqlite' ]]; then export DB_DSN='sqlite:///:memory:'; fi
         if [[ ${{ matrix.db-type }} == 'mysql' ]]; then export DB_DSN='mysql://root:root@127.0.0.1/cakephp_test?init[]=SET sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"'; fi
@@ -72,7 +74,7 @@ jobs:
         pecl: false
 
     - name: Composer Install
-      run: composer require --dev cakephp/cakephp-codesniffer:dev-next
+      run: composer require --dev cakephp/cakephp-codesniffer:^4.0
 
     - name: Run PHP CodeSniffer
       run: vendor/bin/phpcs --standard=vendor/cakephp/cakephp-codesniffer/CakePHP -p src/ tests/
@@ -95,7 +97,7 @@ jobs:
         pecl: false
 
     - name: Composer Install
-      run: composer require --dev psalm/phar:^3.7
+      run: composer require --dev psalm/phar:^3.12
 
     - name: Run psalm
       run: vendor/bin/psalm.phar
