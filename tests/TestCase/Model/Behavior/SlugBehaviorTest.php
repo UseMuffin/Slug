@@ -9,7 +9,7 @@ use Cake\TestSuite\TestCase;
 
 class SlugBehaviorTest extends TestCase
 {
-    public $fixtures = [
+    protected $fixtures = [
         'plugin.Muffin/Slug.Tags',
         'plugin.Muffin/Slug.Articles',
         'plugin.Muffin/Slug.ArticlesTags',
@@ -20,7 +20,7 @@ class SlugBehaviorTest extends TestCase
     {
         parent::setUp();
 
-        $this->Tags = TableRegistry::get('Muffin/Slug.Tags', ['table' => 'slug_tags']);
+        $this->Tags = $this->getTableLocator()->get('Muffin/Slug.Tags', ['table' => 'slug_tags']);
         $this->Tags->setDisplayField('name');
         $this->Tags->addBehavior('Muffin/Slug.Slug');
 
@@ -30,7 +30,8 @@ class SlugBehaviorTest extends TestCase
     public function tearDown(): void
     {
         parent::tearDown();
-        TableRegistry::clear();
+
+        $this->getTableLocator()->clear();
         unset($this->Behavior, $this->Tags);
     }
 
@@ -99,7 +100,7 @@ class SlugBehaviorTest extends TestCase
         $expected = 'baz';
         $this->assertEquals($expected, $result);
 
-        $tag->unsetProperty('name');
+        unset($tag['name']);
         $tag->namespace = 'foobar';
         $result = $this->Tags->save($tag)->slug;
         $this->assertEquals($expected, $result);
@@ -145,6 +146,32 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Tags->save($tag)->slug;
         $expected = 'i-is-nice';
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test with onUpdate = true, onDirty = true and slug field is not dirty and
+     * but unrelated field is dirty.
+     *
+     * @return void
+     */
+    public function testBeforeSaveOnUpdateTrueAndOnDirtyTrue()
+    {
+        $this->Tags->behaviors()->Slug->setConfig([
+            'onUpdate' => true,
+            'onDirty' => true,
+        ]);
+
+        $data = ['name' => 'foo', 'slug' => 'bar', 'counter' => 1];
+        $tag = $this->Tags->newEntity($data);
+
+        $tag = $this->Tags->save($tag);
+        $this->assertEquals('bar', $tag->slug);
+        $this->assertSame(1, $tag->counter);
+
+        $tag->counter = 2;
+        $tag = $this->Tags->save($tag);
+        $this->assertEquals('bar', $tag->slug);
+        $this->assertSame(2, $tag->counter);
     }
 
     /**

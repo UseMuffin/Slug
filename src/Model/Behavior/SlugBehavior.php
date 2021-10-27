@@ -225,18 +225,14 @@ class SlugBehavior extends Behavior
      */
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
-        $onUpdate = $this->getConfig('onUpdate');
-        if (!$entity->isNew() && !$onUpdate) {
+        $isNew = $entity->isNew();
+        if (!$isNew && !$this->getConfig('onUpdate')) {
             return;
         }
 
         $onDirty = $this->getConfig('onDirty');
         $field = $this->getConfig('field');
-        if (
-            !$onDirty
-            && $entity->isDirty($field)
-            && (!$entity->isNew() || (!empty($entity->{$field})))
-        ) {
+        if ($onDirty && !$entity->isDirty($field) && !$isNew) {
             return;
         }
 
