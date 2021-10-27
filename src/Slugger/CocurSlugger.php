@@ -39,15 +39,15 @@ class CocurSlugger implements SluggerInterface
      * Generate slug.
      *
      * @param string $string Input string.
-     * @param string $replacement Replacement string.
+     * @param string $separator Replacement string.
      * @return string Sluggified string.
      */
-    public function slug(string $string, string $replacement = '-'): string
+    public function slug(string $string, string $separator = '-'): string
     {
         $options = $this->config;
         $regex = $options['regex'];
         unset($options['regex']);
 
-        return Slugify::create($regex, $options)->slugify($string, $replacement);
+        return Slugify::create($regex, $options)->slugify($string, $separator);
     }
 }

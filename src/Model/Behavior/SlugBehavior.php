@@ -51,7 +51,7 @@ class SlugBehavior extends Behavior
      * - onDirty: Boolean indicating whether slug should be updated when
      *   slug field is dirty, defaults to `false`.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_defaultConfig = [
         'field' => 'slug',
@@ -150,7 +150,7 @@ class SlugBehavior extends Behavior
      * @param \Muffin\Slug\SluggerInterface|string|array $slugger Sets slugger instance.
      *   Can be SluggerInterface instance or class name or config array.
      * @return void
-     * @psalm-var \Muffin\Slug\SluggerInterface|class-string|array $slugger
+     * @psalm-param \Muffin\Slug\SluggerInterface|class-string|array $slugger
      */
     public function setSlugger($slugger): void
     {
@@ -163,7 +163,7 @@ class SlugBehavior extends Behavior
      * @param \Muffin\Slug\SluggerInterface|string|array $slugger Sets slugger instance.
      *   Can be SluggerInterface instance or class name or config array.
      * @return \Muffin\Slug\SluggerInterface
-     * @psalm-var \Muffin\Slug\SluggerInterface|class-string|array $slugger
+     * @psalm-param \Muffin\Slug\SluggerInterface|class-string|array $slugger
      * @psalm-suppress MoreSpecificReturnType
      */
     protected function _createSlugger($slugger): SluggerInterface
@@ -190,7 +190,7 @@ class SlugBehavior extends Behavior
     /**
      * Returns list of event this behavior is interested in.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function implementedEvents(): array
     {
