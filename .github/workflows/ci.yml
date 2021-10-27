@@ -8,9 +8,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['7.2', '7.4']
+        php-version: ['7.2', '8.0', '8.1']
         db-type: [sqlite, mysql, pgsql]
-    name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }}
+        prefer-lowest: ['']
+        include:
+          - php-version: '7.2'
+            db-type: 'sqlite'
+            prefer-lowest: 'prefer-lowest'
 
     services:
       postgres:
@@ -21,17 +25,16 @@ jobs:
           POSTGRES_PASSWORD: postgres
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 1
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v1
+      uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-version }}
-        extension-csv: mbstring, intl, pdo_${{ matrix.db-type }}
+        extensions: mbstring, intl, pdo_${{ matrix.db-type }}
         coverage: pcov
-        pecl: false
 
     - name: Composer Install
       run: composer install
@@ -64,17 +67,16 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 1
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v1
+      uses: shivammathur/setup-php@v2
       with:
         php-version: '7.2'
-        extension-csv: mbstring, intl
+        extensions: mbstring, intl
         coverage: none
-        pecl: false
 
     - name: Composer Install
       run: composer require --dev cakephp/cakephp-codesniffer:^4.0
@@ -87,20 +89,20 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 1
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v1
+      uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.2'
+        php-version: '8.0'
         extension-csv: mbstring, intl
-        coverage: none
-        pecl: false
+        coverage: none,
+        tools: vimeo/psalm:4.1
 
     - name: Composer Install
-      run: composer require --dev psalm/phar:^3.12
+      run: composer install
 
     - name: Run psalm
-      run: vendor/bin/psalm.phar
+      run: psalm
