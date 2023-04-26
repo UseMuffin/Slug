@@ -9,7 +9,7 @@ use Cake\TestSuite\TestCase;
 
 class SlugBehaviorTest extends TestCase
 {
-    protected $fixtures = [
+    protected array $fixtures = [
         'plugin.Muffin/Slug.Tags',
         'plugin.Muffin/Slug.Articles',
         'plugin.Muffin/Slug.ArticlesTags',
@@ -212,8 +212,8 @@ class SlugBehaviorTest extends TestCase
 
     public function testSlugWithAssociatedTableField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
-        $Authors = TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Authors = $this->getTableLocator()->get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
 
         $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
@@ -229,7 +229,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testBeforeSaveMultiField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['title', 'sub_title']]);
 
         $data = ['title' => 'foo', 'sub_title' => 'bar'];
@@ -268,7 +268,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testBeforeSaveMultiWithOptionalField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', [
             'displayField' => ['title', 'sub_title'],
             'implementedEvents' => [
@@ -286,8 +286,8 @@ class SlugBehaviorTest extends TestCase
 
     public function testBeforeSaveSlugGenerationWithAssociatedTableField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
-        $Authors = TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Authors = $this->getTableLocator()->get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
 
         $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
@@ -303,7 +303,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testCustomSlugField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', [
             'displayField' => 'title',
             'field' => 'sub_title',
@@ -415,17 +415,17 @@ class SlugBehaviorTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The `slug` key is required by the `slugged` finder');
 
-        $result = $this->Tags->find('slugged')->first();
+        $this->Tags->find('slugged')->first();
     }
 
     public function testContainSluggedTables()
     {
-        TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
 
         $this->Tags->belongsToMany('Muffin/Slug.Articles', [
             'foreignKey' => 'slug_tag_id',
             'joinTable' => 'slug_articles_tags',
-            'through' => TableRegistry::get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags']),
+            'through' => $this->getTableLocator()->get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags']),
         ]);
 
         $result = $this->Tags->find('slugged', ['slug' => 'color'])

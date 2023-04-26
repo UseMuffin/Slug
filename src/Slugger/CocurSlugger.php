@@ -44,10 +44,6 @@ class CocurSlugger implements SluggerInterface
      */
     public function slug(string $string, string $separator = '-'): string
     {
-        $options = $this->config;
-        $regex = $options['regex'];
-        unset($options['regex']);
-
-        return Slugify::create($regex, $options)->slugify($string, $separator);
+        return Slugify::create($this->config)->slugify($string, $separator);
     }
 }

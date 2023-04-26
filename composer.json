@@ -31,12 +31,12 @@
         "source": "https://github.com/usemuffin/slug"
     },
     "require": {
-        "cakephp/orm": "^4.0"
+        "cakephp/orm": "5.x-dev"
     },
     "require-dev": {
-        "cakephp/cakephp": "^4.0",
-        "phpunit/phpunit": "~8.5.0",
-        "cocur/slugify": "^1.2"
+        "cakephp/cakephp": "5.x-dev",
+        "phpunit/phpunit": "^9.6",
+        "cocur/slugify": "^4.3"
     },
     "autoload": {
         "psr-4": {
@@ -47,5 +47,13 @@
         "psr-4": {
             "Muffin\\Slug\\Test\\": "tests"
         }
-    }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

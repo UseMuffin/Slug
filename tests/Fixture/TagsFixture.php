@@ -5,22 +5,9 @@ use Cake\TestSuite\Fixture\TestFixture;
 
 class TagsFixture extends TestFixture
 {
-    public $table = 'slug_tags';
+    public string $table = 'slug_tags';
 
-    public $fields = [
-        'id' => ['type' => 'integer'],
-        'namespace' => ['type' => 'string', 'length' => 255, 'null' => true],
-        'slug' => ['type' => 'string', 'length' => 255],
-        'name' => ['type' => 'string', 'length' => 320],
-        'counter' => ['type' => 'integer', 'unsigned' => true, 'default' => 0, 'null' => true],
-        'created' => ['type' => 'datetime', 'null' => true],
-        'modified' => ['type' => 'datetime', 'null' => true],
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id']],
-        ],
-    ];
-
-    public $records = [
+    public array $records = [
         [
             'namespace' => null,
             'slug' => 'color',
