@@ -44,7 +44,7 @@ If you want to find a record using its slug, a custom finder is provided by the 
 
 ```php
 // src/Controller/ExamplesController.php
-$example = $this->Examples->find('slugged', ['slug' => $slug]);
+$example = $this->Examples->find('slugged', slug: $slug);
 ```
 
 ## Configuration
