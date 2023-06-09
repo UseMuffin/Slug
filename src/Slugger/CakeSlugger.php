@@ -18,16 +18,16 @@ class CakeSlugger implements SluggerInterface
      * - `lowercase` - Boolean indication whether slug should be lowercased.
      *   Defaults to true.
      *
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $config = [
+    protected array $config = [
         'lowercase' => true,
     ];
 
     /**
      * Constructor
      *
-     * @param array $config Configuration.
+     * @param array<string, mixed> $config Configuration.
      */
     public function __construct(array $config = [])
     {
