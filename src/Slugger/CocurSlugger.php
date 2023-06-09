@@ -18,9 +18,9 @@ class CocurSlugger implements SluggerInterface
      * - `lowercase` - Boolean indication whether slug should be lowercased.
      *   Default to true.
      *
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $config = [
+    protected array $config = [
         'regex' => null,
         'lowercase' => true,
     ];
@@ -28,7 +28,7 @@ class CocurSlugger implements SluggerInterface
     /**
      * Constructor
      *
-     * @param array $config Configuration.
+     * @param array<string, mixed> $config Configuration.
      */
     public function __construct(array $config = [])
     {

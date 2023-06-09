@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Muffin\Slug\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\Entity;
-use Cake\ORM\TableRegistry;
+use Cake\ORM\Table;
 use Cake\TestSuite\TestCase;
+use InvalidArgumentException;
+use Muffin\Slug\Model\Behavior\SlugBehavior;
 
 class SlugBehaviorTest extends TestCase
 {
@@ -15,6 +17,9 @@ class SlugBehaviorTest extends TestCase
         'plugin.Muffin/Slug.ArticlesTags',
         'plugin.Muffin/Slug.Authors',
     ];
+
+    protected Table $Tags;
+    protected SlugBehavior $Behavior;
 
     public function setUp(): void
     {
@@ -360,9 +365,8 @@ class SlugBehaviorTest extends TestCase
 
     public function testSlugThrowsInvalidArgumentException()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
-        $tag = $this->Tags->newEmptyEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
 
@@ -375,7 +379,7 @@ class SlugBehaviorTest extends TestCase
         $expected = 'my-slug';
         $this->assertEquals($expected, $result);
 
-        $tag = $this->Tags->find('slugged', ['slug' => 'dark-color'])->first();
+        $tag = $this->Tags->find('slugged', slug: 'dark-color')->first();
         $tag = $this->Tags->patchEntity($tag, ['name' => 'new name']);
         $result = $this->Tags->save($tag)->slug;
         $expected = 'dark-color';
@@ -395,7 +399,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testFinder()
     {
-        $result = $this->Tags->find('slugged', ['slug' => 'dark-color'])
+        $result = $this->Tags->find('slugged', slug: 'dark-color')
             ->select(['slug', 'name'])
             ->first()
             ->toArray();
@@ -406,16 +410,8 @@ class SlugBehaviorTest extends TestCase
         ];
         $this->assertEquals($expected, $result);
 
-        $query = $this->Tags->find('slugged', ['slug' => 0]);
+        $query = $this->Tags->find('slugged', slug: '0');
         $this->assertInstanceOf('Cake\ORM\Query', $query);
-    }
-
-    public function testFinderException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The `slug` key is required by the `slugged` finder');
-
-        $this->Tags->find('slugged')->first();
     }
 
     public function testContainSluggedTables()
@@ -428,7 +424,7 @@ class SlugBehaviorTest extends TestCase
             'through' => $this->getTableLocator()->get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags']),
         ]);
 
-        $result = $this->Tags->find('slugged', ['slug' => 'color'])
+        $result = $this->Tags->find('slugged', slug: 'color')
             ->contain(['Articles'])
             ->first()
             ->toArray();

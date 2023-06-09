@@ -85,9 +85,9 @@ class SlugBehavior extends Behavior
     /**
      * Slugger instance.
      *
-     * @var \Muffin\Slug\SluggerInterface
+     * @var \Muffin\Slug\SluggerInterface|null
      */
-    protected SluggerInterface $_slugger;
+    protected ?SluggerInterface $_slugger = null;
 
     /**
      * Constructor.
@@ -136,18 +136,17 @@ class SlugBehavior extends Behavior
      */
     public function getSlugger(): SluggerInterface
     {
-        /** @psalm-suppress RedundantPropertyInitializationCheck */
         return $this->_slugger ??= $this->_createSlugger($this->getConfig('slugger'));
     }
 
     /**
      * Set slugger instance.
      *
-     * @param \Muffin\Slug\SluggerInterface|class-string<\Muffin\Slug\SluggerInterface>|array $slugger Sets slugger instance.
+     * @param \Muffin\Slug\SluggerInterface|array|class-string<\Muffin\Slug\SluggerInterface> $slugger Sets slugger instance.
      *   Can be SluggerInterface instance or class name or config array.
      * @return void
      */
-    public function setSlugger(SluggerInterface|string|array $slugger): void
+    public function setSlugger(SluggerInterface|array|string $slugger): void
     {
         $this->_slugger = $this->_createSlugger($slugger);
     }
@@ -155,12 +154,11 @@ class SlugBehavior extends Behavior
     /**
      * Create slugger instance
      *
-     * @param \Muffin\Slug\SluggerInterface|class-string<\Muffin\Slug\SluggerInterface>|array $slugger Sets slugger instance.
+     * @param \Muffin\Slug\SluggerInterface|array|class-string<\Muffin\Slug\SluggerInterface> $slugger Sets slugger instance.
      *   Can be SluggerInterface instance or class name or config array.
      * @return \Muffin\Slug\SluggerInterface
-     * @psalm-suppress MoreSpecificReturnType
      */
-    protected function _createSlugger(SluggerInterface|string|array $slugger): SluggerInterface
+    protected function _createSlugger(SluggerInterface|array|string $slugger): SluggerInterface
     {
         if (is_string($slugger)) {
             return new $slugger();
@@ -272,17 +270,13 @@ class SlugBehavior extends Behavior
      * Custom finder.
      *
      * @param \Cake\ORM\Query\SelectQuery $query Query.
-     * @param array $options Options.
+     * @param string $slug Slug to search for.
      * @return \Cake\ORM\Query\SelectQuery Query.
      */
-    public function findSlugged(SelectQuery $query, array $options): SelectQuery
+    public function findSlugged(SelectQuery $query, string $slug): SelectQuery
     {
-        if (!isset($options['slug'])) {
-            throw new InvalidArgumentException('The `slug` key is required by the `slugged` finder.');
-        }
-
         return $query->where([
-            $this->_table->aliasField($this->getConfig('field')) => $options['slug'],
+            $this->_table->aliasField($this->getConfig('field')) => $slug,
         ]);
     }
 
@@ -411,7 +405,6 @@ class SlugBehavior extends Behavior
     {
         $replacements = $this->getConfig('replacements');
         $slugger = $this->getSlugger();
-        /** @psalm-suppress PossiblyNullReference */
         $slug = $slugger->slug(str_replace(array_keys($replacements), $replacements, $string), $separator);
         if ($this->getConfig('maxLength')) {
             $slug = Text::truncate(

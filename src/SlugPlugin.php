@@ -5,7 +5,7 @@ namespace Muffin\Slug;
 
 use Cake\Core\BasePlugin;
 
-class Plugin extends BasePlugin
+class SlugPlugin extends BasePlugin
 {
     /**
      * The name of this plugin
