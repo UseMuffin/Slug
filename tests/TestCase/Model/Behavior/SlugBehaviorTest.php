@@ -172,6 +172,10 @@ class SlugBehaviorTest extends TestCase
         $tag = $this->Tags->save($tag);
         $this->assertEquals('bar', $tag->slug);
         $this->assertSame(2, $tag->counter);
+
+        $tag->name = 'changed';
+        $tag = $this->Tags->save($tag);
+        $this->assertEquals('changed', $tag->slug);
     }
 
     /**
