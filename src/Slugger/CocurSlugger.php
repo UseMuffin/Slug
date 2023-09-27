@@ -18,9 +18,9 @@ class CocurSlugger implements SluggerInterface
      * - `lowercase` - Boolean indication whether slug should be lowercased.
      *   Default to true.
      *
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $config = [
+    protected array $config = [
         'regex' => null,
         'lowercase' => true,
     ];
@@ -28,7 +28,7 @@ class CocurSlugger implements SluggerInterface
     /**
      * Constructor
      *
-     * @param array $config Configuration.
+     * @param array<string, mixed> $config Configuration.
      */
     public function __construct(array $config = [])
     {
@@ -44,10 +44,6 @@ class CocurSlugger implements SluggerInterface
      */
     public function slug(string $string, string $separator = '-'): string
     {
-        $options = $this->config;
-        $regex = $options['regex'];
-        unset($options['regex']);
-
-        return Slugify::create($regex, $options)->slugify($string, $separator);
+        return Slugify::create($this->config)->slugify($string, $separator);
     }
 }

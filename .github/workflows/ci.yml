@@ -1,102 +1,21 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '*'
+
+permissions:
+  contents: read
 
 jobs:
   testsuite:
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ['7.4', '8.0', '8.1', '8.2']
-        db-type: [sqlite, mysql, pgsql]
-        prefer-lowest: ['']
-        include:
-          - php-version: '7.2'
-            db-type: 'sqlite'
-            prefer-lowest: 'prefer-lowest'
+    uses: ADmad/.github/.github/workflows/testsuite-with-db.yml@master
+    secrets: inherit
 
-    services:
-      postgres:
-        image: postgres
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: postgres
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-version }}
-        extensions: mbstring, intl, pdo_${{ matrix.db-type }}
-        coverage: pcov
-
-    - name: Composer Install
-      run: composer install
-
-    - name: Run PHPUnit
-      run: |
-        if [ ${{ matrix.db-type }} == 'mysql' ]; then
-          sudo service mysql start
-          mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE cakephp;'
-        fi
-
-        if [[ ${{ matrix.db-type }} == 'sqlite' ]]; then export DB_DSN='sqlite:///:memory:'; fi
-        if [[ ${{ matrix.db-type }} == 'mysql' ]]; then export DB_DSN='mysql://root:root@127.0.0.1/cakephp'; fi
-        if [[ ${{ matrix.db-type }} == 'pgsql' ]]; then export DB_DSN='postgres://postgres:postgres@127.0.0.1/postgres'; fi
-
-        if [[ ${{ matrix.php-version }} == '7.4' && ${{ matrix.db-type }} == 'sqlite' ]]; then
-          vendor/bin/phpunit --coverage-clover=coverage.xml
-        else
-          vendor/bin/phpunit
-        fi
-
-    - name: Code Coverage Report
-      if: matrix.php-version == '7.4' && matrix.db-type == 'sqlite'
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: bash <(curl -s https://codecov.io/bash)
-
-  coding-standard:
-    name: Coding Standard
-    runs-on: ubuntu-22.04
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.2'
-        extensions: mbstring, intl
-        coverage: none
-
-    - name: Composer Install
-      run: composer require --dev cakephp/cakephp-codesniffer:^4.0
-
-    - name: Run PHP CodeSniffer
-      run: vendor/bin/phpcs --standard=vendor/cakephp/cakephp-codesniffer/CakePHP -p src/ tests/
-
-  static-analysis:
-    name: Static Analysis
-    runs-on: ubuntu-22.04
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
-        extensions: mbstring, intl
-        coverage: none
-        tools: vimeo/psalm:4.1
-
-    - name: Composer Install
-      run: composer install
-
-    - name: Run psalm
-      run: psalm
+  cs-stan:
+    uses: ADmad/.github/.github/workflows/cs-stan.yml@master
+    secrets: inherit

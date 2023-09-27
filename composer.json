@@ -31,12 +31,12 @@
         "source": "https://github.com/usemuffin/slug"
     },
     "require": {
-        "cakephp/orm": "^4.0"
+        "cakephp/orm": "^5.0"
     },
     "require-dev": {
-        "cakephp/cakephp": "^4.0",
-        "phpunit/phpunit": "~8.5.0",
-        "cocur/slugify": "^1.2"
+        "cakephp/cakephp": "5.0",
+        "phpunit/phpunit": "^10.1",
+        "cocur/slugify": "^4.3"
     },
     "autoload": {
         "psr-4": {

@@ -4,17 +4,22 @@ declare(strict_types=1);
 namespace Muffin\Slug\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\Entity;
-use Cake\ORM\TableRegistry;
+use Cake\ORM\Table;
 use Cake\TestSuite\TestCase;
+use InvalidArgumentException;
+use Muffin\Slug\Model\Behavior\SlugBehavior;
 
 class SlugBehaviorTest extends TestCase
 {
-    protected $fixtures = [
+    protected array $fixtures = [
         'plugin.Muffin/Slug.Tags',
         'plugin.Muffin/Slug.Articles',
         'plugin.Muffin/Slug.ArticlesTags',
         'plugin.Muffin/Slug.Authors',
     ];
+
+    protected Table $Tags;
+    protected SlugBehavior $Behavior;
 
     public function setUp(): void
     {
@@ -216,8 +221,8 @@ class SlugBehaviorTest extends TestCase
 
     public function testSlugWithAssociatedTableField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
-        $Authors = TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Authors = $this->getTableLocator()->get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
 
         $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
@@ -233,7 +238,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testBeforeSaveMultiField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['title', 'sub_title']]);
 
         $data = ['title' => 'foo', 'sub_title' => 'bar'];
@@ -272,7 +277,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testBeforeSaveMultiWithOptionalField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', [
             'displayField' => ['title', 'sub_title'],
             'implementedEvents' => [
@@ -290,8 +295,8 @@ class SlugBehaviorTest extends TestCase
 
     public function testBeforeSaveSlugGenerationWithAssociatedTableField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
-        $Authors = TableRegistry::get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Authors = $this->getTableLocator()->get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
 
         $Articles->belongsTo('Authors', ['className' => 'Muffin/Slug.Authors']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['author.name', 'title']]);
@@ -307,7 +312,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testCustomSlugField()
     {
-        $Articles = TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', [
             'displayField' => 'title',
             'field' => 'sub_title',
@@ -364,9 +369,8 @@ class SlugBehaviorTest extends TestCase
 
     public function testSlugThrowsInvalidArgumentException()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
-        $tag = $this->Tags->newEmptyEntity();
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
 
@@ -379,7 +383,7 @@ class SlugBehaviorTest extends TestCase
         $expected = 'my-slug';
         $this->assertEquals($expected, $result);
 
-        $tag = $this->Tags->find('slugged', ['slug' => 'dark-color'])->first();
+        $tag = $this->Tags->find('slugged', slug: 'dark-color')->first();
         $tag = $this->Tags->patchEntity($tag, ['name' => 'new name']);
         $result = $this->Tags->save($tag)->slug;
         $expected = 'dark-color';
@@ -399,7 +403,7 @@ class SlugBehaviorTest extends TestCase
 
     public function testFinder()
     {
-        $result = $this->Tags->find('slugged', ['slug' => 'dark-color'])
+        $result = $this->Tags->find('slugged', slug: 'dark-color')
             ->select(['slug', 'name'])
             ->first()
             ->toArray();
@@ -410,29 +414,21 @@ class SlugBehaviorTest extends TestCase
         ];
         $this->assertEquals($expected, $result);
 
-        $query = $this->Tags->find('slugged', ['slug' => 0]);
+        $query = $this->Tags->find('slugged', slug: '0');
         $this->assertInstanceOf('Cake\ORM\Query', $query);
-    }
-
-    public function testFinderException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The `slug` key is required by the `slugged` finder');
-
-        $result = $this->Tags->find('slugged')->first();
     }
 
     public function testContainSluggedTables()
     {
-        TableRegistry::get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
+        $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
 
         $this->Tags->belongsToMany('Muffin/Slug.Articles', [
             'foreignKey' => 'slug_tag_id',
             'joinTable' => 'slug_articles_tags',
-            'through' => TableRegistry::get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags']),
+            'through' => $this->getTableLocator()->get('Muffin/Slug.ArticlesTags', ['table' => 'slug_articles_tags']),
         ]);
 
-        $result = $this->Tags->find('slugged', ['slug' => 'color'])
+        $result = $this->Tags->find('slugged', slug: 'color')
             ->contain(['Articles'])
             ->first()
             ->toArray();
