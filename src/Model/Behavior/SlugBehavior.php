@@ -221,12 +221,24 @@ class SlugBehavior extends Behavior
 
         $onDirty = $this->getConfig('onDirty');
         $field = $this->getConfig('field');
-        if ($onDirty && !$entity->isDirty($field) && !$isNew) {
-            return;
+        $slugFieldDirty = $entity->isDirty($field);
+
+        if ($onDirty && !$slugFieldDirty && !$isNew) {
+            $displayFieldDirty = false;
+            foreach ((array)$this->getConfig('displayField') as $df) {
+                if ($entity->isDirty($df)) {
+                    $displayFieldDirty = true;
+                    break;
+                }
+            }
+
+            if (!$displayFieldDirty) {
+                return;
+            }
         }
 
         $separator = $this->getConfig('separator');
-        if ($entity->isDirty($field) && !empty($entity->{$field})) {
+        if ($slugFieldDirty && !empty($entity->{$field})) {
             $slug = $this->slug($entity, $entity->{$field}, $separator);
             $entity->set($field, $slug);
 
