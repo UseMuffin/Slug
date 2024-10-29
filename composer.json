@@ -34,8 +34,8 @@
         "cakephp/orm": "^5.0"
     },
     "require-dev": {
-        "cakephp/cakephp": "5.0",
-        "phpunit/phpunit": "^10.1",
+        "cakephp/cakephp": "^5.0",
+        "phpunit/phpunit": "^10.1 || ^11.1",
         "cocur/slugify": "^4.3"
     },
     "autoload": {
