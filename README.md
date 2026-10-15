@@ -60,7 +60,7 @@ Slug comes with the following configuration options:
  generating the slug.
 - `maxLength`: maximum length of a slug. Defaults to the field's limit as
  defined in the schema (when possible). Otherwise, no limit.
-- `slugger`: class that implements the `Muffin\Slug\SlugInterface`. Defaults
+- `slugger`: class that implements the `Muffin\Slug\SluggerInterface`. Defaults
  to `Muffin\Slug\Slugger\CakeSlugger`.
 - `unique:`: tells if slugs should be unique. Set this to a callable if you
  want to customize how unique slugs are generated. Defaults to `true`.
