@@ -29,7 +29,7 @@ class SlugBehaviorTest extends TestCase
         $this->Tags->setDisplayField('name');
         $this->Tags->addBehavior('Muffin/Slug.Slug');
 
-        $this->Behavior = $this->Tags->behaviors()->Slug;
+        $this->Behavior = $this->Tags->getBehavior('Slug');
     }
 
     public function tearDown(): void
@@ -40,7 +40,7 @@ class SlugBehaviorTest extends TestCase
         unset($this->Behavior, $this->Tags);
     }
 
-    public function testInitialize()
+    public function testInitialize(): void
     {
         $result = $this->Behavior->getConfig('displayField');
         $expected = 'name';
@@ -51,7 +51,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testImplementedEvents()
+    public function testImplementedEvents(): void
     {
         $result = $this->Behavior->implementedEvents();
         $expected = [
@@ -65,12 +65,12 @@ class SlugBehaviorTest extends TestCase
         $this->Tags->removeBehavior('Slug');
         $this->Tags->addBehavior('Muffin/Slug.Slug', compact('implementedEvents'));
 
-        $result = $this->Tags->behaviors()->Slug->implementedEvents();
+        $result = $this->Tags->getBehavior('Slug')->implementedEvents();
         $expected = $implementedEvents;
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeSave()
+    public function testBeforeSave(): void
     {
         $data = ['name' => 'foo'];
         $tag = $this->Tags->newEntity($data);
@@ -86,7 +86,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeSaveOnUpdate()
+    public function testBeforeSaveOnUpdate(): void
     {
         $data = ['name' => 'foo'];
         $tag = $this->Tags->newEntity($data);
@@ -99,7 +99,7 @@ class SlugBehaviorTest extends TestCase
         $result = $this->Tags->save($tag)->slug;
         $this->assertEquals($expected, $result);
 
-        $this->Tags->behaviors()->Slug->setConfig('onUpdate', true);
+        $this->Tags->getBehavior('Slug')->setConfig('onUpdate', true);
         $tag->name = 'baz';
         $result = $this->Tags->save($tag)->slug;
         $expected = 'baz';
@@ -111,7 +111,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeSaveDirtyField()
+    public function testBeforeSaveDirtyField(): void
     {
         $data = ['name' => 'foo', 'slug' => 'bar'];
         $tag = $this->Tags->newEntity($data);
@@ -127,7 +127,7 @@ class SlugBehaviorTest extends TestCase
         $expected = 'baz';
         $this->assertEquals($expected, $result);
 
-        $this->Tags->behaviors()->Slug->setConfig('onDirty', true);
+        $this->Tags->getBehavior('Slug')->setConfig('onDirty', true);
 
         $data = ['name' => 'I am nice', 'slug' => 'make ME Nice'];
         $tag = $this->Tags->newEntity($data);
@@ -143,7 +143,7 @@ class SlugBehaviorTest extends TestCase
         $expected = 'fooz';
         $this->assertEquals($expected, $result);
 
-        $this->Tags->behaviors()->Slug->setConfig('onUpdate', true);
+        $this->Tags->getBehavior('Slug')->setConfig('onUpdate', true);
 
         $tag = $this->Tags->find()->where(['name' => 'I am nice'])->first();
         $tag->slug = 'I is NICE';
@@ -159,9 +159,9 @@ class SlugBehaviorTest extends TestCase
      *
      * @return void
      */
-    public function testBeforeSaveOnUpdateTrueAndOnDirtyTrue()
+    public function testBeforeSaveOnUpdateTrueAndOnDirtyTrue(): void
     {
-        $this->Tags->behaviors()->Slug->setConfig([
+        $this->Tags->getBehavior('Slug')->setConfig([
             'onUpdate' => true,
             'onDirty' => true,
         ]);
@@ -186,7 +186,7 @@ class SlugBehaviorTest extends TestCase
     /**
      * Make sure no slug is generated when `displayField` is empty.
      */
-    public function testBeforeSaveEmptyField()
+    public function testBeforeSaveEmptyField(): void
     {
         $this->Tags->removeBehavior('Slug');
         $this->Tags->addBehavior('Muffin/Slug.Slug', [
@@ -204,7 +204,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testSlug()
+    public function testSlug(): void
     {
         $result = $this->Behavior->slug('foo/bar');
         $expected = 'foo-bar';
@@ -219,7 +219,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testSlugWithAssociatedTableField()
+    public function testSlugWithAssociatedTableField(): void
     {
         $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Authors = $this->getTableLocator()->get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
@@ -231,12 +231,12 @@ class SlugBehaviorTest extends TestCase
         $article = $Articles->newEntity($data);
         $article->author = $Authors->get(1);
 
-        $result = $Articles->slug($article);
+        $result = $Articles->getBehavior('Slug')->slug($article);
         $expected = 'admad-foo';
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeSaveMultiField()
+    public function testBeforeSaveMultiField(): void
     {
         $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', ['displayField' => ['title', 'sub_title']]);
@@ -270,12 +270,12 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
 
         $entity = new Entity(['title' => 'ad', 'sub_title' => 'mad']);
-        $result = $Articles->slug($entity);
+        $result = $Articles->getBehavior('Slug')->slug($entity);
         $expected = 'ad-mad';
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeSaveMultiWithOptionalField()
+    public function testBeforeSaveMultiWithOptionalField(): void
     {
         $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', [
@@ -293,7 +293,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testBeforeSaveSlugGenerationWithAssociatedTableField()
+    public function testBeforeSaveSlugGenerationWithAssociatedTableField(): void
     {
         $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Authors = $this->getTableLocator()->get('Muffin/Slug.Authors', ['table' => 'slug_authors']);
@@ -310,7 +310,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testCustomSlugField()
+    public function testCustomSlugField(): void
     {
         $Articles = $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
         $Articles->addBehavior('Muffin/Slug.Slug', [
@@ -326,7 +326,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testMaxLength()
+    public function testMaxLength(): void
     {
         $this->Tags->removeBehavior('Slug');
         $this->Tags->addBehavior('Muffin/Slug.Slug');
@@ -345,7 +345,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testCustomMaxLength()
+    public function testCustomMaxLength(): void
     {
         $this->Tags->removeBehavior('Slug');
         $this->Tags->addBehavior('Muffin/Slug.Slug', [
@@ -367,14 +367,14 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testSlugThrowsInvalidArgumentException()
+    public function testSlugThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
         $this->Behavior->slug($this->Tags->newEntity([]));
     }
 
-    public function testSlugUnchanged()
+    public function testSlugUnchanged(): void
     {
         $data = ['name' => 'foo', 'slug' => 'my-slug'];
         $tag = $this->Tags->newEntity($data);
@@ -390,7 +390,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testSavingEntityWithErrors()
+    public function testSavingEntityWithErrors(): void
     {
         $data = ['name' => 'foo'];
         $tag = $this->Tags->newEntity($data);
@@ -401,7 +401,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertNull($tag->get('slug'));
     }
 
-    public function testFinder()
+    public function testFinder(): void
     {
         $result = $this->Tags->find('slugged', slug: 'dark-color')
             ->select(['slug', 'name'])
@@ -415,10 +415,10 @@ class SlugBehaviorTest extends TestCase
         $this->assertEquals($expected, $result);
 
         $query = $this->Tags->find('slugged', slug: '0');
-        $this->assertInstanceOf('Cake\ORM\Query', $query);
+        $this->assertInstanceOf('Cake\ORM\Query\SelectQuery', $query);
     }
 
-    public function testContainSluggedTables()
+    public function testContainSluggedTables(): void
     {
         $this->getTableLocator()->get('Muffin/Slug.Articles', ['table' => 'slug_articles']);
 
@@ -438,7 +438,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertCount(1, $result['articles']);
     }
 
-    public function testSluggerConfig()
+    public function testSluggerConfig(): void
     {
         $this->Behavior->setConfig('slugger', [
             'className' => '\Muffin\Slug\Slugger\CakeSlugger',
@@ -448,7 +448,7 @@ class SlugBehaviorTest extends TestCase
         $this->assertSame('FOO-BAR', $this->Behavior->getSlugger()->slug('FOO BAR'));
     }
 
-    public function testCallableForUnique()
+    public function testCallableForUnique(): void
     {
         $this->Behavior->setConfig('scope', function ($entity) {
             return ['namespace' => $entity->namespace];
@@ -456,6 +456,6 @@ class SlugBehaviorTest extends TestCase
 
         $newEntity = $this->Tags->newEntity(['namespace' => 'foo', 'name' => 'Color']);
 
-        $this->assertEquals('color', $this->Tags->slug($newEntity));
+        $this->assertEquals('color', $this->Tags->getBehavior('Slug')->slug($newEntity));
     }
 }
